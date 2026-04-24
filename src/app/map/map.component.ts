@@ -4,6 +4,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 import { TrackingService } from '../../Services/Tracking.service';
 import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-map',
   standalone: true, // 2. Ensure this is true
@@ -13,7 +14,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class MapComponent implements OnInit {
   ngOnInit(): void {
-    this.startRealTracking();
+   // this.startRealTracking();
+   this.useCurrentLocationAsStart()
   }
 tracker = inject(TrackingService);
 cdRef=inject(ChangeDetectorRef);
@@ -109,7 +111,7 @@ setOrigin(latlng: L.LatLng) {
     if (this.destCircle) this.map.removeLayer(this.destCircle);
     this.destCircle = L.circle(latlng, { radius: 500, color: 'red' }).addTo(this.map);
     this.settingMode = 'NONE';
-    this.startRealTracking()
+  //  this.startRealTracking()
   }
    iconRetinaUrl = 'assets/marker-icon-2x.png';
  iconUrl = 'assets/marker-icon.png';
@@ -358,6 +360,14 @@ async performSearch() {
         }).addTo(this.map);
 
         this.searchQuery = topResult.display_name; // Update input with full address
+        this.cdRef.detectChanges(); // Update UI with new search query
+
+        // If we already have an origin, start tracking
+        if (this.geofenceCircle) {
+          const group = new L.FeatureGroup([this.geofenceCircle, this.destinationCircle]);
+          this.map.fitBounds(group.getBounds(), { padding: [50, 50] });
+          this.startRealTracking();
+        }
       } else {
         alert("Location not found in this area.");
       }

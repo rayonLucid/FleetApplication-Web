@@ -18,13 +18,13 @@
   </div>
 
   <div class="setup-controls">
-     <button (click)="useCurrentLocationAsStart()" style="background: #3498db; color: white;">
+     <button (click)="useCurrentLocationAsStart()" style="background: #3498db; color: white;display:none">
     📍 Use My Location as Start
   </button>
-    <button (click)="settingMode = 'START'" [class.active]="settingMode === 'START'">
+    <button (click)="settingMode = 'START'" [class.active]="settingMode === 'START'" style="display: none;">
       📍 Set Start
     </button>
-    <button (click)="settingMode = 'DESTINATION'" [class.active]="settingMode === 'DESTINATION'">
+    <button (click)="settingMode = 'DESTINATION'" [class.active]="settingMode === 'DESTINATION'" style="display: none;">
       🏁 Set Destination
     </button>
 
