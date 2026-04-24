@@ -1,1 +1,94 @@
 /* You can add global styles to this file, and also import other style files */
+.map-container {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+}
+@import "leaflet/dist/leaflet.css";
+
+.tracker-dashboard {
+  position: absolute;
+  top: 38vh;
+  left:12%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+
+  button {
+    padding: 8px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    &.active {
+      background: #007bff;
+      color: white;
+      border-color: #0056b3;
+    }
+     &.inactive {
+      background: #c4daf2 !important;
+      color: black !important;
+      border-color: #fff ;
+    }
+  }
+
+  .instruction {
+    font-size: 0.8rem;
+    color: #007bff;
+    text-align: center;
+    margin: 0;
+  }
+}
+
+.map-frame {
+  height: 100vh;
+  width: 100%;
+}
+
+.status-box {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+
+  .At-Origin { color: #27ae60; }   /* Green */
+  .In-Transit { color: #f39c12; }  /* Orange */
+  .Arrived { color: #e74c3c; }     /* Red */
+}
+
+/* Style for the 'Active' selection buttons */
+button.active {
+  background-color: #3498db !important;
+  color: white;
+}
+
+
+.search-box {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+
+  input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  button {
+    padding: 8px 12px;
+    background: #eee;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover { background: #e0e0e0; }
+  }
+}

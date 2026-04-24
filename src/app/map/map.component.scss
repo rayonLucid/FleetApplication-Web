@@ -1,0 +1,16 @@
+
+/* At the very top of styles.scss */
+
+
+.map-frame {
+  height: 100vh;
+  width: 100%;
+  display: block;
+
+}
+.setup-controls{
+  display: flex !important;
+  flex:1;
+  flex-direction: column;
+  gap: 12px;
+}

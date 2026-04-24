@@ -1,0 +1,56 @@
+<div class="tracker-dashboard" *ngIf="ShowTrackerBoard ==true" >
+<div class="search-box">
+
+    <input type="text"
+           [(ngModel)]="searchQuery"
+           (keyup.enter)="performSearch()"
+           placeholder="Search Destination (e.g. Ikeja Mall)">
+    <button (click)="performSearch()">🔍</button>
+  </div>
+  <div class="search-box">
+
+    <input type="text"
+           [(ngModel)]="searchQueryPup"
+           (keyup.enter)="searchLocation()"
+           placeholder="Pick-Up (e.g. Ikeja Mall)">
+    <button (click)="searchLocation()">🔍</button>
+  </div>
+
+  <div class="setup-controls">
+     <button (click)="useCurrentLocationAsStart()" style="background: #3498db; color: white;">
+    📍 Use My Location as Start
+  </button>
+    <button (click)="settingMode = 'START'" [class.active]="settingMode === 'START'">
+      📍 Set Start
+    </button>
+    <button (click)="settingMode = 'DESTINATION'" [class.active]="settingMode === 'DESTINATION'">
+      🏁 Set Destination
+    </button>
+
+
+    <button (click)="startSimulation()"
+        [disabled]="!geofenceCircle && !destinationCircle" [class.inactive]="!geofenceCircle || !destinationCircle"
+        style="background: #27ae60; color: white; margin-top: 5px;">
+  ▶ Run Trip Simulation
+</button>
+
+<div class="status-box" *ngIf="tracker.tripStatus() !== 'Idle'">
+  <p>Current Status: <span [class]="tracker.tripStatus()">{{ tracker.tripStatus() }}</span></p>
+</div>
+  </div>
+
+  <div class="info-panel" *ngIf="geofenceCircle && destinationCircle">
+    <p>Trip Status: <strong>{{ tracker.tripStatus() }}</strong></p>
+    <p>Total KM: <strong>{{ tracker.totalDistance | number:'1.2-2' }}</strong></p>
+  </div>
+
+  <p class="instruction" *ngIf="settingMode !== 'NONE'">
+    Click on the map to place the {{ settingMode }} point...
+  </p>
+</div>
+
+<div class="map-frame"
+     leaflet
+     [leafletOptions]="options"
+     (leafletMapReady)="onMapReady($event)">
+</div>
