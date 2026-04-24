@@ -399,7 +399,7 @@ startRealTracking() {
 
       // 1. Update UI (Marker and Path)
       if (!this.carMarker) {
-        this.carMarker = L.marker(currentPos).addTo(this.map);
+        this.carMarker = L.marker(currentPos,{icon:this.icon}).addTo(this.map);
         this.routeLine = L.polyline([currentPos], { color: '#3498db' }).addTo(this.map);
       } else {
         this.carMarker.setLatLng(currentPos);
