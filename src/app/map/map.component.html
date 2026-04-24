@@ -1,19 +1,20 @@
 <div class="tracker-dashboard" *ngIf="ShowTrackerBoard ==true" >
+    <div class="search-box">
+
+    <input type="text"
+           [(ngModel)]="searchQueryPup"
+           (keyup.enter)="searchLocation()"
+           placeholder="Search Pick-Up Location (e.g. Abule Egba)">
+    <button (click)="searchLocation()">🔍</button>
+  </div>
+
 <div class="search-box">
 
     <input type="text"
            [(ngModel)]="searchQuery"
            (keyup.enter)="performSearch()"
-           placeholder="Search Destination (e.g. Ikeja Mall)">
+           placeholder="Search Drop-Off Destination (e.g. Ikeja Mall)">
     <button (click)="performSearch()">🔍</button>
-  </div>
-  <div class="search-box">
-
-    <input type="text"
-           [(ngModel)]="searchQueryPup"
-           (keyup.enter)="searchLocation()"
-           placeholder="Pick-Up (e.g. Ikeja Mall)">
-    <button (click)="searchLocation()">🔍</button>
   </div>
 
   <div class="setup-controls">
