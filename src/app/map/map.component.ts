@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, inject, OnInit } from '@angular/core';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 import { TrackingService } from '../../Services/Tracking.service';
 import { FormsModule } from '@angular/forms';
+import { RealTimeTrackingService } from '../../Services/RealTimeTracking.service';
 
 @Component({
   selector: 'app-map',
@@ -19,6 +20,29 @@ export class MapComponent implements OnInit {
   }
 tracker = inject(TrackingService);
 cdRef=inject(ChangeDetectorRef);
+
+constructor() {
+    // This effect runs automatically whenever the tracker.lastKnownLocation() changes
+    effect(() => {
+      const pos = this.tracker.lastKnownLocation();
+      if (pos && this.map) {
+        this.updateMapMarker(pos);
+      }
+    });
+  }
+
+updateMapMarker(pos: L.LatLng) {
+    if (!this.carMarker) {
+      this.carMarker = L.marker(pos).addTo(this.map);
+      this.routeLine = L.polyline([pos], { color: '#3498db' }).addTo(this.map);
+    } else {
+      this.carMarker.setLatLng(pos);
+      this.routeLine?.addLatLng(pos);
+    }
+    this.map.panTo(pos);
+  }
+
+
 ShowTrackerBoard = true;
   carMarker!: L.Marker;
   routeLine!: L.Polyline;
@@ -56,7 +80,12 @@ searchQuery: string = '';
     iconSize: [25, 41],
     iconAnchor: [12, 41]
   });
+rtTracking = inject(RealTimeTrackingService);
 
+  // When the user selects a car to track
+  trackHardwareDevice(deviceId: string) {
+    this.rtTracking.startConnection(deviceId);
+  }
   // 2. We will store a reference to the map object for later
 handleMapClick(latlng: L.LatLng) {
 

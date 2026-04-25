@@ -115,4 +115,42 @@ startTrip(startCoord: L.LatLng) {
       return true; // Vehicle is safe
     }
   }
+
+  // We'll use this signal to tell the MapComponent where to move the marker
+  public lastKnownLocation = signal<L.LatLng | null>(null);
+
+  // Define these as class properties so they can be accessed globally
+  public originCircle?: L.Circle;
+  public destinationCircle?: L.Circle;
+
+  processMovementFromHardware(currentPos: L.LatLng) {
+    if (!this.originCircle || !this.destinationCircle) return;
+
+    // 1. Update the 'Last Known' signal so the UI can react
+    this.lastKnownLocation.set(currentPos);
+
+    // 2. Calculate Distance (The 'Jitter' Filter)
+    const lastPos = this.path.length > 0 ? this.path[this.path.length - 1] : null;
+    if (lastPos) {
+      const distanceMoved = lastPos.distanceTo(currentPos);
+      if (distanceMoved > 5) { // Only count movement > 5 meters
+        this.totalDistance += distanceMoved / 1000;
+        this.path.push(currentPos);
+      }
+    } else {
+      this.path.push(currentPos);
+    }
+
+    // 3. Geofencing Logic
+    const distToOrigin = currentPos.distanceTo(this.originCircle.getLatLng());
+    const distToDest = currentPos.distanceTo(this.destinationCircle.getLatLng());
+
+    if ((this.tripStatus() === 'Idle' || this.tripStatus() === 'At Origin') && distToOrigin > this.originCircle.getRadius()) {
+      this.tripStatus.set('In Transit');
+    }
+
+    if (this.tripStatus() === 'In Transit' && distToDest <= this.destinationCircle.getRadius()) {
+      this.tripStatus.set('Arrived');
+    }
+  }
 }

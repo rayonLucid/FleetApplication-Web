@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { TrackingService } from './Tracking.service';
 import * as signalR from '@microsoft/signalr';
 import * as L from 'leaflet';
@@ -38,6 +38,8 @@ constructor() { }
       this.tracker.processMovementFromHardware(newPos);
     });
   }
+
+
 
   stopConnection() {
     this.hubConnection?.stop();
