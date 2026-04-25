@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { TrackingService } from './Tracking.service';
 import * as signalR from '@microsoft/signalr';
 import * as L from 'leaflet';
@@ -27,7 +27,7 @@ constructor() { }
         // Join a 'room' specific to this car so you don't see everyone's data
         this.hubConnection.invoke('JoinVehicleGroup', deviceId);
       })
-      .catch(err => console.error('Error while starting connection: ' + err));
+      .catch((err: string) => console.error('Error while starting connection: ' + err));
 
     // LISTEN for the 'UpdateLocation' event from the .NET Controller
     this.hubConnection.on('UpdateLocation', (data: any) => {
