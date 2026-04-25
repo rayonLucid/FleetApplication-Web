@@ -39,6 +39,8 @@ constructor() { }
     });
   }
 
+
+
   stopConnection() {
     this.hubConnection?.stop();
     this.isConnected.set(false);
