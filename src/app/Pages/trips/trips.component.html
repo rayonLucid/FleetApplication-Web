@@ -1,0 +1,147 @@
+<div class="trips-container">
+  <div class="header">
+    <h2>🚚 Trips</h2>
+    <div class="actions">
+      <button class="btn-outline" (click)="toggleHistory()">
+        {{ showHistory ? 'Hide History' : 'Show History' }}
+      </button>
+      <button class="btn-primary" (click)="openStartModal()">+ Create Trip</button>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search by vehicle, driver, location or status..." [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" class="search-input" />
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading trips...</div>
+
+  <div class="cards-grid" *ngIf="!isLoading">
+    <div *ngFor="let trip of filteredTrips | paginate: { itemsPerPage: pageSize, currentPage: page }" class="trip-card" [class.completed]="trip.endTime">
+      <div class="card-header">
+        <span class="vehicle">{{ trip.vehicleDisplay }}</span>
+        <span class="status" [class.active]="!trip.endTime">{{ trip.endTime ? (trip.status || 'Completed') : 'Active' }}</span>
+      </div>
+      <div class="card-body">
+        <div><span class="label">Driver:</span> {{ trip.driverName }}</div>
+        <div><span class="label">Start:</span> {{ trip.startTime | date:'yyyy-MM-dd HH:mm' }} @ {{ trip.startLocation || '?' }}</div>
+        <div *ngIf="trip.endTime"><span class="label">End:</span> {{ trip.endTime | date:'yyyy-MM-dd HH:mm' }} @ {{ trip.endLocation || '?' }}</div>
+        <div *ngIf="trip.distanceKm"><span class="label">Distance:</span> {{ trip.distanceKm }} km</div>
+        <div *ngIf="trip.totalDeliveries"><span class="label">Deliveries:</span> {{ trip.deliveriesComplete || 0 }} / {{ trip.totalDeliveries }}</div>
+      </div>
+      <div class="card-actions">
+          <button class="btn-edit" (click)="openEditModal(trip)">✏️ Edit</button>
+        <button *ngIf="!trip.endTime" class="btn-end" (click)="openEndModal(trip)">🏁 End Trip</button>
+        <button class="btn-delete" (click)="deleteTrip(trip.id)">🗑️ Delete</button>
+      </div>
+    </div>
+    <div *ngIf="filteredTrips.length === 0" class="no-data">No trips found.</div>
+  </div>
+
+  <div class="pagination-container" *ngIf="filteredTrips.length > pageSize">
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+
+<!-- Modal: Start Trip -->
+<div class="modal" *ngIf="showStartModal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>Start New Trip</h3><button class="close" (click)="showStartModal=false">&times;</button></div>
+    <div class="modal-body">
+<div class="modal-body-container">
+      <select [(ngModel)]="newTrip.vehicleId" class="full-width" (change)="onVehicleChange($event)">
+        <option value="">Select Vehicle</option>
+        <option *ngFor="let v of vehicles" [value]="v.id">{{ v.plateNumber }} - {{ v.vehicleName }}</option>
+      </select>
+      <select [(ngModel)]="newTrip.driverId" class="full-width">
+        <option value="">Select Driver</option>
+        <option *ngFor="let d of drivers" [value]="d.id">{{ d.fullName }}</option>
+      </select>
+      <input type="text" placeholder="Start Location" [(ngModel)]="newTrip.startLocation" class="full-width" />
+       <input type="text" placeholder="End Location" [(ngModel)]="newTrip.endLocation" (change)="GetEndLocationInfo(newTrip.endLocation)" class="full-width" />
+      <label>Total Deliveries </label>
+      <input type="number" placeholder="Total Deliveries (optional)" [(ngModel)]="newTrip.totalDeliveries" class="full-width" />
+ <label>Status </label>
+      <select [(ngModel)]="newTrip.status" class="full-width">
+
+        <option value="Loading">Loading</option>
+         <option value="In Transit">In Transit</option>
+        <option value="Delayed">Delayed</option>
+         <option value="completed">Completed</option>
+           <option value="cancelled">Cancelled</option>
+            <option value="ongoing">Ongoing</option>
+
+
+      </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showStartModal=false">Cancel</button>
+      <button class="btn-save" (click)="startTrip()">
+          @if(IsCreating==true){
+          <i class="fa fa-spinner fa-spin"></i>  Creating..
+        }@else{
+          Create Trip
+        }
+
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: End Trip -->
+<div class="modal" *ngIf="showEndModal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>End Trip</h3><button class="close" (click)="showEndModal=false">&times;</button></div>
+    <div class="modal-body">
+      <p>Ending trip for <strong>{{ selectedTrip?.vehicleDisplay }}</strong> (driver: {{ selectedTrip?.driverName }})</p>
+
+      <input type="number" placeholder="Distance (km)" [(ngModel)]="endTripData.distanceKm" class="full-width" />
+      <input type="number" placeholder="Deliveries Completed" [(ngModel)]="endTripData.deliveriesComplete" class="full-width" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showEndModal=false">Cancel</button>
+      <button class="btn-save" (click)="endTrip()">End Trip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit Trip -->
+<div class="modal" *ngIf="showEditModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Trip</h3>
+      <button class="close" (click)="showEditModal=false">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-body-container">
+        <select [(ngModel)]="editTripData.vehicleId" class="full-width">
+          <option value="">Select Vehicle</option>
+          <option *ngFor="let v of vehicles" [value]="v.id">{{ v.plateNumber }} - {{ v.vehicleName }}</option>
+        </select>
+        <select [(ngModel)]="editTripData.driverId" class="full-width">
+          <option value="">Select Driver</option>
+          <option *ngFor="let d of drivers" [value]="d.id">{{ d.fullName }}</option>
+        </select>
+        <input type="text" placeholder="Start Location" [(ngModel)]="editTripData.startLocation" class="full-width" />
+        <input type="text" placeholder="End Location" [(ngModel)]="editTripData.endLocation" class="full-width" (change)="GetEditEndLocationInfo(editTripData.endLocation)" />
+        <label>Total Deliveries</label>
+        <input type="number" placeholder="Total Deliveries (optional)" [(ngModel)]="editTripData.totalDeliveries" class="full-width" />
+        <label>Status</label>
+        <select [(ngModel)]="editTripData.status" class="full-width">
+          <option value="Loading">Loading</option>
+          <option value="In Transit">In Transit</option>
+          <option value="Delayed">Delayed</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+          <option value="Ongoing">Ongoing</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showEditModal=false">Cancel</button>
+      <button class="btn-save" (click)="updateTrip()" [disabled]="IsUpdating">
+        {{ IsUpdating ? 'Updating...' : 'Update Trip' }}
+      </button>
+    </div>
+  </div>
+</div>

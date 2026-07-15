@@ -1,0 +1,347 @@
+.assignments-container { padding: 24px; background: #fff; border-radius: 16px; }
+.header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.btn-primary { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+.btn-outline { background: transparent; border: 1px solid #3b82f6; color: #3b82f6; padding: 8px 16px; border-radius: 8px; cursor: pointer; }
+.search-input { width: 100%; max-width: 400px; padding: 10px 16px; border: 1px solid #d1d5db; border-radius: 40px; margin-bottom: 24px; }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+.assignment-card { background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; transition: 0.2s; &.inactive { opacity: 0.7; background: #f9fafb; } }
+.card-header { padding: 16px; background: #f8fafc; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; .vehicle { font-weight: 700; } .status { padding: 4px 10px; border-radius: 40px; font-size: 12px; background: #e5e7eb; &.active { background: #d1fae5; color: #065f46; } } }
+.card-body { padding: 16px; .label { font-weight: 600; display: inline-block; width: 80px; } }
+.card-actions {
+  padding: 12px 16px; border-top: 1px solid #e5e7eb;
+  .btn-end { width: 100%; background: #fee2e2; color: #dc2626;
+    border: none; padding: 8px; border-radius: 8px; cursor: pointer; }
+   }
+    .actions  {
+  display: flex;
+  gap: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    margin-right: 8px;
+    &.edit-btn { color: #3b82f6; }
+    &.delete-btn { color: #ef4444; }
+  }
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  .close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+}
+.modal-body {
+  padding: 24px;
+}
+.form-row {
+  display: flex;
+  gap: 26px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.form-group {
+  flex: 1;
+  label { display: block; margin-bottom: 4px; font-weight: 500; }
+  input { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
+  .error { color: #ef4444; font-size: 12px; margin-top: 4px; }
+  &.checkbox { display: flex; align-items: center; label { margin-bottom: 0; margin-left: 8px; } }
+}
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: right;
+  button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  .btn-cancel { background: #e5e7eb; }
+  .btn-save { background: #3b82f6; color: white; }
+}
+.loading, .no-data { text-align: center; padding: 40px; color: #6b7280; }
+
+// Full-width input class
+.full-width {
+  width:100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1a1a2e;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  outline: none;
+
+  // Placeholder styling
+  &::placeholder {
+    color: #999;
+    font-style: italic;
+  }
+
+  // Hover state
+  &:hover {
+    border-color: #2196f3;
+    background-color: #f5f7fa;
+  }
+
+  // Focus state
+  &:focus {
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  }
+
+  // Disabled state
+  &:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #d0d0d0;
+  }
+
+  // Invalid/error state (Angular validation)
+  &.ng-invalid.ng-touched {
+    border-color: #d63031;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(214, 48, 49, 0.1);
+    }
+  }
+
+  // Valid state
+  &.ng-valid.ng-touched {
+    border-color: #00b894;
+  }
+}
+
+// Optional: Input group with label
+.input-group {
+  margin-bottom: 20px;
+
+  .input-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .input-help {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .input-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #d63031;
+    font-weight: 500;
+  }
+}
+
+// Optional: Input with icon
+.input-with-icon {
+  position: relative;
+
+  .full-width {
+    padding-left: 40px;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 16px;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .full-width {
+    background-color: #2d2d44;
+    color: #e0e0e0;
+    border-color: #444;
+
+    &::placeholder {
+      color: #777;
+    }
+
+    &:hover {
+      background-color: #3d3d5c;
+      border-color: #2196f3;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+    }
+  }
+}
+
+
+// Textarea styling
+textarea.full-width,
+textarea.textarea {
+  width: 100%;
+  max-width: 95%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  color: #1a1a2e;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  resize: vertical; // Allow vertical resizing only
+  min-height: 100px; // Default height
+  transition: all 0.2s ease;
+  outline: none;
+max-height: 300px; // ✅ Limit maximum height
+  // Placeholder styling
+  &::placeholder {
+    color: #999;
+    font-style: italic;
+  }
+
+  // Hover state
+  &:hover {
+    border-color: #2196f3;
+    background-color: #f5f7fa;
+  }
+
+  // Focus state
+  &:focus {
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  }
+
+  // Disabled state
+  &:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #d0d0d0;
+  }
+
+  // Invalid/error state (Angular validation)
+  &.ng-invalid.ng-touched {
+    border-color: #d63031;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(214, 48, 49, 0.1);
+    }
+  }
+
+  // Valid state
+  &.ng-valid.ng-touched {
+    border-color: #00b894;
+  }
+
+  // Remove resize for non-editable
+  &.no-resize {
+    resize: none;
+    overflow: hidden;
+  }
+}
+
+// Optional: Auto-expanding textarea
+textarea.auto-expand {
+  resize: none;
+  overflow: hidden;
+  height: auto;
+}
+
+// Optional: Textarea with label
+.textarea-group {
+  margin-bottom: 20px;
+
+  .textarea-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  textarea.full-width {
+    width: 100%;
+  }
+
+  .textarea-help {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .textarea-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #d63031;
+    font-weight: 500;
+  }
+}
+
+// Optional: Different heights
+textarea.tall {
+  min-height: 150px;
+}
+
+textarea.short {
+  min-height: 60px;
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  textarea.full-width,
+  textarea.textarea {
+    background-color: #2d2d44;
+    color: #e0e0e0;
+    border-color: #444;
+
+    &::placeholder {
+      color: #777;
+    }
+
+    &:hover {
+      background-color: #3d3d5c;
+      border-color: #2196f3;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+    }
+  }
+}

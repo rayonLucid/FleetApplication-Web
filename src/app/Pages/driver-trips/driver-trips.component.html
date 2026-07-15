@@ -1,0 +1,67 @@
+<div class="driver-trips-container">
+  <div class="header">
+    <h2>📋 My Trips</h2>
+    <button class="btn-outline" (click)="toggleHistory()">
+      {{ showHistory ? 'Hide History' : 'Show History' }}
+    </button>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search by vehicle or location..." [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" class="search-input" />
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading trips...</div>
+
+  <div class="cards-grid" *ngIf="!isLoading">
+    <div *ngFor="let trip of filteredTrips | paginate: { itemsPerPage: pageSize, currentPage: page }" class="trip-card" [class.completed]="trip.endTime">
+      <div class="card-header">
+        <span class="vehicle">{{ trip.vehicleDisplay }}</span>
+        <span class="status" [class.active]="!trip.endTime">{{ trip.endTime ? (trip.status || 'Completed') : 'Active' }}</span>
+      </div>
+      <div class="card-body">
+        <div><span class="label">Start:</span> {{ trip.startTime | date:'yyyy-MM-dd HH:mm' }} @ {{ trip.startLocation || '?' }}</div>
+        <div *ngIf="trip.endTime"><span class="label">End:</span> {{ trip.endTime | date:'yyyy-MM-dd HH:mm' }} @ {{ trip.endLocation || '?' }}</div>
+        <div *ngIf="trip.distanceKm"><span class="label">Distance:</span> {{ trip.distanceKm }} km</div>
+        <div *ngIf="trip.totalDeliveries"><span class="label">Deliveries:</span> {{ trip.deliveriesComplete || 0 }} / {{ trip.totalDeliveries }}</div>
+      </div>
+      <!-- Optional: button to end active trip (if driver is allowed) -->
+      <div class="card-actions" *ngIf="!trip.endTime">
+        <button class="btn-end" (click)="openEndModal(trip.id)">🏁 End Trip</button>
+      </div>
+    </div>
+    <div *ngIf="filteredTrips.length === 0" class="no-data">No trips found.</div>
+  </div>
+
+  <div class="pagination-container" *ngIf="filteredTrips.length > pageSize">
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+
+
+<!-- ... existing cards grid ... -->
+
+<!-- End Trip Modal -->
+<div class="modal" *ngIf="showEndModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>End Trip </h3>
+      <button class="close" (click)="cancelEndModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-body-content">
+      <label>End Location</label>
+      <input type="text" [(ngModel)]="endTripData.endLocation" placeholder="e.g., Customer warehouse" class="full-width" />
+
+      <label>Distance (km)</label>
+      <input type="number" step="0.1" [(ngModel)]="endTripData.distanceKm" placeholder="Optional" class="full-width" />
+
+      <label>Deliveries Completed</label>
+      <input type="number" [(ngModel)]="endTripData.deliveriesComplete" placeholder="Optional" class="full-width" />
+    </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cancelEndModal()">Cancel</button>
+      <button class="btn-save" (click)="confirmEndTrip()">End Trip</button>
+    </div>
+  </div>
+</div>

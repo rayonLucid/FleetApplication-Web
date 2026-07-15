@@ -20,6 +20,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "dist/FleetApplication",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -31,7 +32,9 @@
             ],
             "styles": [
               "src/styles.scss",
-              "./node_modules/leaflet/dist/leaflet.css"
+              "./node_modules/leaflet/dist/leaflet.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/font-awesome/css/font-awesome.min.css"
 
             ],
             "scripts": [
@@ -44,12 +47,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "4MB",
+                  "maximumError": "8MB"
                 }
               ],
               "outputHashing": "all"

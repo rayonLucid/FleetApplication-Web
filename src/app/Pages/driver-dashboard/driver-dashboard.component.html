@@ -1,0 +1,138 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>{{greetings}} {{stats?.driverName}} </h1>
+    <button
+      class="shift-btn"
+      [class.active]="isShiftActive"
+      (click)="toggleShift()"
+      [disabled]="isLoading">
+      {{ isShiftActive ? 'End Trip' : 'Start Trip' }}
+    </button>
+  </div>
+
+  <!-- Loading & Error -->
+  <div *ngIf="isLoading" class="loading">Loading dashboard...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <!-- Stats Grid -->
+  <div class="stats-grid" *ngIf="!isLoading && stats">
+    <!-- Vehicle Card -->
+    <div class="stat-card">
+      <div class="card-icon">🚛</div>
+      <div class="card-content">
+        <span class="label">Assigned Vehicle</span>
+        <span class="value">{{ stats.assignedVehicle }}</span>
+      </div>
+    </div>
+
+    <!-- License Status Card -->
+    <div class="stat-card">
+      <div class="card-icon">📄</div>
+      <div class="card-content">
+        <span class="label">License</span>
+        <span class="value" [ngClass]="getLicenseStatusClass(stats.licenseStatus)">{{ stats.licenseStatus }}</span>
+      </div>
+    </div>
+
+    <!-- Trips This Month -->
+    <div class="stat-card">
+      <div class="card-icon">📆</div>
+      <div class="card-content">
+        <span class="label">Trips This Month</span>
+        <span class="value">{{ stats.totalTripsThisMonth }}</span>
+      </div>
+    </div>
+
+    <!-- Active Shift Hours -->
+    <div class="stat-card">
+      <div class="card-icon">⏱️</div>
+      <div class="card-content">
+        <span class="label">Shift Hours (MTD)</span>
+        <span class="value">{{ stats.activeShiftHours | number:'1.1-1' }} h</span>
+      </div>
+    </div>
+
+    <!-- Fuel Level -->
+    <div class="stat-card">
+      <div class="card-icon">⛽</div>
+      <div class="card-content">
+        <span class="label">Fuel Level</span>
+        <span class="value">{{ stats.fuelLevel }}%</span>
+        <div class="fuel-bar"><div class="fuel-fill" [style.width.%]="stats.fuelLevel"></div></div>
+      </div>
+    </div>
+
+    <!-- DOT Hours Remaining -->
+    <div class="stat-card">
+      <div class="card-icon">📊</div>
+      <div class="card-content">
+        <span class="label">DOT Hours Remaining</span>
+        <span class="value">{{ stats.dotHoursRemaining | number:'1.1-1' }}</span>
+      </div>
+    </div>
+
+    <!-- Next Maintenance -->
+    <div class="stat-card" [class.due-blink]="isMaintenanceDue">
+      <div class="card-icon">🔧</div>
+      <div class="card-content">
+        <span class="label">Next Maintenance</span>
+        <span class="value">{{ stats.nextMaintenanceDate }}</span>
+      </div>
+    </div>
+
+    <!-- Live GPS Indicator -->
+    <div class="stat-card live-indicator" [class.active]="isShiftActive">
+      <div class="card-icon">📍</div>
+      <div class="card-content">
+        <span class="label">Live Tracking</span>
+        <span class="value">{{ isShiftActive ? 'Active' : 'Off' }}</span>
+        <div *ngIf="liveLocation !=null" class="live-coords">
+          {{ liveLocation.latitude | number:'1.6' }}, {{ liveLocation.longitude | number:'1.6' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Trip Card -->
+  <div class="trip-card" *ngIf="!isLoading && currentTrip">
+    <div class="trip-header">
+      <span>🚚 Current Trip</span>
+     <span class="trip-status" [ngClass]="tripStatusClass">
+  @if (isShiftActive) {
+    {{ currentTrip.status }}
+  } @else {
+    Loading
+  }
+</span>
+    </div>
+    <div class="trip-body">
+      <div class="trip-detail">
+        <span class="label">Destination:</span>
+        <span>{{ currentTrip.destination }}</span>
+      </div>
+      <div class="trip-detail">
+        <span class="label">ETA:</span>
+        <span>{{ currentTrip.eta }}</span>
+      </div>
+      <div class="trip-progress">
+        <span class="label">Deliveries:</span>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="(currentTrip.deliveriesComplete / currentTrip.totalDeliveries) * 100"></div>
+        </div>
+        <span>{{ currentTrip.deliveriesComplete }}/{{ currentTrip.totalDeliveries }}</span>
+          <button class="btn-delivery" (click)="incrementDelivery()" [disabled]="(currentTrip.deliveriesComplete >= currentTrip.totalDeliveries) && isShiftActive">
+   @if(CompleteDelivery==false){
+✔
+   } @else{
+    <i class="fa fa-spinner fa-spin"></i>
+   } Complete One
+  </button>
+
+      </div>
+    </div>
+  </div>
+  <div class="no-trip" *ngIf="!isLoading && !currentTrip">
+    <p>📭 No active trip assigned.</p>
+  </div>
+</div>

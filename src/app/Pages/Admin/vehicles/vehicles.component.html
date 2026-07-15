@@ -1,0 +1,129 @@
+<div class="vehicles-container">
+  <div class="header">
+    <h2>🚛 Vehicles</h2>
+    <button class="btn-add" (click)="openAddModal()">+ Add Vehicle</button>
+  </div>
+
+  <!-- Search Box -->
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Search by plate, name, model or IMEI..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearchChange()"
+      class="search-input"
+    />
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading vehicles...</div>
+
+  <!-- Card Grid -->
+  <div class="cards-grid" *ngIf="!isLoading">
+    <div
+      *ngFor="let vehicle of filteredVehicles | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: filteredVehicles.length }"
+      class="vehicle-card"
+      [class.inactive]="!vehicle.isActive"
+    >
+      <div class="card-header">
+        <span class="plate">{{ vehicle.plateNumber }}</span>
+        <span class="status-badge" [class.active]="vehicle.isActive">
+          {{ vehicle.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="detail"><span class="label">Name:</span> {{ vehicle.vehicleName || '-' }}</div>
+        <div class="detail"><span class="label">Model:</span> {{ vehicle.model || '-' }}</div>
+        <div class="detail"><span class="label">Year:</span> {{ vehicle.year || '-' }}</div>
+        <div class="detail"><span class="label">Fuel:</span> {{ vehicle.fuelType || '-' }}</div>
+        <div class="detail"><span class="label">Capacity:</span> {{ vehicle.capacity || '-' }}</div>
+        <div class="detail"><span class="label">IMEI:</span> <code>{{ vehicle.imei || '-' }}</code></div>
+        <div class="detail" *ngIf="vehicle.nextMaintenanceDate">
+          <span class="label">Next Maint:</span> {{ vehicle.nextMaintenanceDate | date:'yyyy-MM-dd' }}
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="edit-btn" (click)="openEditModal(vehicle)">✏️ Edit</button>
+        <button class="delete-btn" (click)="deleteVehicle(vehicle.id)">🗑️ Delete</button>
+      </div>
+    </div>
+
+    <div *ngIf="filteredVehicles.length === 0" class="no-data">No vehicles found.</div>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container" *ngIf="filteredVehicles.length > pageSize">
+    <pagination-controls
+      (pageChange)="page = $event"
+      previousLabel="Previous"
+      nextLabel="Next"
+      screenReaderPaginationLabel="Pagination"
+    ></pagination-controls>
+  </div>
+</div>
+
+<!-- Modal (same as before) -->
+<div class="modal" *ngIf="showModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Edit Vehicle' : 'Add Vehicle' }}</h3>
+      <button class="close" (click)="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="vehicleForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Plate Number *</label>
+            <input formControlName="plateNumber" type="text" />
+            <div class="error" *ngIf="vehicleForm.get('plateNumber')?.invalid && vehicleForm.get('plateNumber')?.touched">Required</div>
+          </div>
+          <div class="form-group">
+            <label>Vehicle Name</label>
+            <input formControlName="vehicleName" type="text" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Model</label>
+            <input formControlName="model" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Year</label>
+            <input formControlName="year" type="number" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fuel Type</label>
+            <input formControlName="fuelType" type="text" />
+          </div>
+          <div class="form-group">
+            <label>Capacity</label>
+            <input formControlName="capacity" type="number" min="0" step="0.01" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>IMEI</label>
+            <input formControlName="imei" type="text" placeholder="Device IMEI" />
+          </div>
+          <div class="form-group">
+            <label>Next Maintenance Date</label>
+            <input formControlName="nextMaintenanceDate" type="date" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group checkbox">
+            <label>
+              <input formControlName="isActive" type="checkbox" />
+              Active
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+      <button class="btn-save" (click)="saveVehicle()">Save</button>
+    </div>
+  </div>
+</div>

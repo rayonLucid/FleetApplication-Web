@@ -1,0 +1,77 @@
+<div class="fleet-dashboard">
+  <div class="dashboard-header">
+    <div>
+      <h1>Active Company Fleet Drivers</h1>
+      <p>Manage verified multi-tenant personnel authorizations securely.</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="state-container text-muted">
+    <div class="spinner-blue"></div>
+    <p>Retrieving database records...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="state-container alert-danger">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading && !errorMessage">
+    <div *ngIf="drivers.length === 0" class="state-container text-muted">
+      <p>No drivers onboarded under your organization yet.</p>
+    </div>
+
+    <div *ngIf="drivers.length > 0">
+      <div class="card-grid">
+        <div *ngFor="let driver of drivers | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }"
+             class="driver-card">
+          <div class="card-body">
+            <div class="badge-row">
+              <span class="status-badge" [ngClass]="driver.isActive ? 'active' : 'inactive'">
+                {{ driver.isActive ? 'Active Duty' : 'Suspended' }}
+              </span>
+            </div>
+
+            <h3 class="driver-name">{{ driver.fullName }}</h3>
+
+            <div class="meta-info">
+              <div class="meta-item">
+                <span class="label">Phone:</span>
+                <span class="val">{{ driver.phoneNumber }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">License No:</span>
+                <span class="val font-mono">{{ driver.licenseNumber }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="label">Expires:</span>
+                <span class="val">{{ driver.licenseExpiryDate | date:'mediumDate' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-edit" (click)="openEditModal(driver)">
+              Modify Profile
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="currentPage = $event" previousLabel="Back" nextLabel="Next"></pagination-controls>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeEditModal(false)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="modal-close-btn" (click)="closeEditModal(false)">&times;</button>
+
+      <app-driver-edit *ngIf="selectedDriver" [driverData]="selectedDriver"></app-driver-edit>
+
+      <div class="modal-footer-action">
+        <button class="btn-secondary" (click)="closeEditModal(true)">Close & Sync List</button>
+      </div>
+    </div>
+  </div>
+</div>

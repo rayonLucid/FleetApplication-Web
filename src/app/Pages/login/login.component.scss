@@ -1,0 +1,186 @@
+// Brand Theme & Vibrant Palette Variables
+$bg-overlay: rgba(243, 244, 246, 0.85); // Light slate canvas overlay with high transparency
+$card-white: #ffffff;
+$border-light: #e5e7eb;
+
+$text-dark: #111827;            // Clean deep grey/black text
+$text-muted: #4b5563;           // Subdued slate dashboard text
+$brand-blue: #2563eb;           // Logistics active blue (blue-600)
+$brand-hover: #1d4ed8;          // Concentrated focus blue (blue-700)
+$error-rose: #e11d48;           // System warning indicator (rose-600)
+
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+
+  // 🌟 LAYER 1: Fleet Management Logistics Networking Background Image
+  background-image: url('https://images.unsplash.com/photo-1524522173746-f628baad3644?q=80&w=1600&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  // 🌟 LAYER 2: Light Overlay Tint for high foreground readability
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(219, 234, 254, 0.82) 100%);
+    backdrop-filter: blur(4px); // Softens the background vehicles/networks
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .login-box {
+    position: relative;
+    z-index: 2; // Mounts safely over the overlay tint layer
+    width: 100%;
+    max-width: 28rem;
+    padding: 3rem 2.5rem;
+    background: $card-white;
+    border: 1px solid $border-light;
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2.25rem;
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: $text-dark;
+        margin: 0;
+        letter-spacing: -0.025em;
+        text-transform: uppercase;
+      }
+
+      p {
+        font-size: 0.875rem;
+        color: $text-muted;
+        margin: 0.625rem 0 0 0;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+    }
+
+    .login-alert {
+      padding: 0.875rem 1rem;
+      background-color: #fff1f2;
+      color: $error-rose;
+      border: 1px solid #fecdd3;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1.75rem;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .field-group {
+        display: flex;
+        flex-direction: column;
+
+        .field-label {
+          font-size: 0.813rem;
+          font-weight: 700;
+          color: #374151; // gray-700
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.5rem;
+        }
+
+        .field-input {
+          padding: 0.75rem 1rem;
+          background: #ffffff;
+          border: 1px solid #d1d5db; // gray-300
+          border-radius: 0.5rem;
+          font-size: 0.95rem;
+          color: $text-dark;
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+
+          &::placeholder {
+            color: #9ca3af;
+          }
+
+          &:focus {
+            border-color: $brand-blue;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+          }
+
+          &.input-invalid {
+            border-color: $error-rose;
+            background-color: rgba(225, 29, 72, 0.01);
+
+            &:focus {
+              box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.12);
+            }
+          }
+        }
+
+        .error-msg {
+          margin: 0.4rem 0 0 0;
+          font-size: 0.75rem;
+          font-weight: 500;
+          color: $error-rose;
+        }
+      }
+
+      .form-actions {
+        margin-top: 0.75rem;
+
+        .btn-login {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.625rem;
+          padding: 0.875rem;
+          background-color: $brand-blue;
+          color: #ffffff;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 700;
+          font-size: 0.95rem;
+          text-transform: uppercase;
+          letter-spacing: 0.025em;
+          cursor: pointer;
+          transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+
+          &:hover:not(:disabled) {
+            background-color: $brand-hover;
+            box-shadow: 0 6px 16px rgba(29, 78, 216, 0.3);
+          }
+
+          &:active:not(:disabled) {
+            transform: scale(0.98);
+          }
+
+          &:disabled {
+            background-color: #d1d5db; // gray-300
+            color: #9ca3af;
+            box-shadow: none;
+            cursor: not-allowed;
+          }
+
+          .btn-spinner {
+            width: 1.125rem; height: 1.125rem;
+            border: 2px solid #ffffff; border-top-color: transparent;
+            border-radius: 50%; animation: spin 0.6s linear infinite;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

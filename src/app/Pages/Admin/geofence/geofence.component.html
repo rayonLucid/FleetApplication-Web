@@ -1,0 +1,105 @@
+<div class="geofence-container">
+  <div class="header">
+    <h2>🌍 Geofences</h2>
+    <div>
+      <button class="btn-outline" (click)="toggleInactive()">
+        {{ showInactive ? 'Hide Inactive' : 'Show Inactive' }}
+      </button>
+      <button class="btn-primary" (click)="openCreateModal()">+ Add Geofence</button>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search by name..." [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" class="search-input" />
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading...</div>
+
+  <div class="cards-grid" *ngIf="!isLoading">
+    <div *ngFor="let gf of filteredGeofences | paginate: { itemsPerPage: pageSize, currentPage: page }" class="geofence-card" [class.inactive]="!gf.isActive">
+      <div class="card-header">
+        <span>{{ gf.name }}</span>
+        <span class="status" [class.active]="gf.isActive">{{ gf.isActive ? 'Active' : 'Inactive' }}</span>
+      </div>
+      <div class="card-body">
+        <div><span class="label">Center:</span> {{ gf.centerLatitude | number:'1.6' }}, {{ gf.centerLongitude | number:'1.6' }}</div>
+        <div><span class="label">Radius:</span> {{ gf.radiusMeters }} m</div>
+      </div>
+      <div class="card-actions">
+        <button (click)="openEditModal(gf)">✏️ Edit</button>
+        <button (click)="openAssignModal(gf.id,gf.name)">🔗 Assign Vehicles</button>
+        <button class="delete" (click)="deleteGeofence(gf.id)">🗑️ Delete</button>
+      </div>
+    </div>
+    <div *ngIf="filteredGeofences.length === 0" class="no-data">No geofences found.</div>
+  </div>
+
+  <div class="pagination-container" *ngIf="filteredGeofences.length > pageSize">
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+
+<!-- Form Modal -->
+<div class="modal" *ngIf="showFormModal">
+  <div class="modal-content modal-wide">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Edit Geofence' : 'Add Geofence' }}</h3>
+      <button class="close" (click)="closeFormModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" [(ngModel)]="formData.name" placeholder="e.g., Warehouse Zone"  />
+      </div>
+       <div class="form-group">
+        <label>Location *</label>
+        <div style="display: flex;">
+        <input type="text" [(ngModel)]="formData.address" placeholder="e.g., Gbagada phase ii" style="border-right: 0px !important;" (change)="SerachDestination(formData.address)"  />
+        <button class="btn"  (click)="SerachDestination(formData.address)"><i class="fa fa-search"></i></button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Radius (meters)</label>
+          <input type="number" [(ngModel)]="formData.radiusMeters" min="10" step="10" />
+        </div>
+        <div class="form-group checkbox">
+          <label><input type="checkbox" [(ngModel)]="formData.isActive" /> Active</label>
+        </div>
+      </div>
+      <div class="map-hint">Click on the map to set the center point.</div>
+      <div #mapContainer class="map-container"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeFormModal()">Cancel</button>
+      <button class="btn-save" (click)="saveGeofence()">@if(Issaving){
+<i class="fa fa-spinner fa-spin"></i> Saving..
+      }@else{
+        Save
+      }</button>
+    </div>
+  </div>
+</div>
+
+<!-- Assign Modal -->
+<div class="modal" *ngIf="showAssignModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Assign Vehicles to {{formData.name}}</h3>
+      <button class="close" (click)="closeAssignModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="subtitle">Select which vehicles should be monitored for this geofence.</p>
+      <div *ngFor="let v of allVehicles" class="vehicle-item">
+        <label>
+          <input type="checkbox" [checked]="selectedVehicleIds.includes(v.id)" (change)="toggleVehicleSelection(v.id)" />
+          {{ v.plateNumber }} - {{ v.vehicleName }}
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeAssignModal()">Cancel</button>
+      <button class="btn-save" (click)="saveAssignments()">Save</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <div class="logo" *ngIf="!isCollapsed">Fleet</div>
+    <div class="logo-icon" *ngIf="isCollapsed">F</div>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      {{ isCollapsed ? '→' : '←' }}
+    </button>
+  </div>
+
+  <ul class="nav-menu">
+    <li *ngFor="let item of menuItems" [class.active]="router.url === item.route">
+      <a *ngIf="isVisible(item)" [routerLink]="item.route" routerLinkActive="active">
+        <span class="icon">{{ item.icon }}</span>
+        <span class="label" *ngIf="!isCollapsed">{{ item.label }}</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="logout()">
+      <span class="icon">🚪</span>
+      <span class="label" *ngIf="!isCollapsed">Logout</span>
+    </button>
+  </div>
+</div>

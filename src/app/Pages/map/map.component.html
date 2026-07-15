@@ -1,4 +1,4 @@
-<div class="tracker-dashboard" *ngIf="ShowTrackerBoard ==true" >
+<div class="tracker-dashboard" *ngIf="ShowTrackerBoard ==false" >
     <div class="search-box">
 
     <input type="text"
@@ -17,7 +17,7 @@
     <button (click)="performSearch()">🔍</button>
   </div>
 
-  <div class="setup-controls">
+  <div class="setup-controls" >
      <button (click)="useCurrentLocationAsStart()" style="background: #3498db; color: white;display:none">
     📍 Use My Location as Start
   </button>
@@ -54,4 +54,16 @@
      leaflet
      [leafletOptions]="options"
      (leafletMapReady)="onMapReady($event)">
+</div>
+
+<div class="info-panel">
+  <h3>Live Vehicles</h3>
+ <ul class="live-vehicles-list">
+  <li *ngFor="let entry of currentTrip" >
+    <a (click)="selectVehicle(entry)" [class.active]="selectedTrip === entry">
+      <strong>{{ entry.driverName }}</strong>
+      <span class="plate-badge">{{ entry.vehiclePlate }}</span>
+    </a>
+  </li>
+</ul>
 </div>

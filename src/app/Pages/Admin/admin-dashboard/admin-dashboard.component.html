@@ -1,0 +1,94 @@
+<div class="admin-dashboard">
+  <div class="header">
+    <h1>Admin Dashboard</h1>
+    <div class="date">{{ today | date:'fullDate' }}</div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading fleet data...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="!isLoading && stats" class="stats-grid">
+    <div class="stat-card">
+      <div class="card-icon">🚛</div>
+      <div class="card-content">
+        <span class="label">Total Vehicles</span>
+        <span class="value">{{ stats.totalVehicles }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="card-icon">👨‍✈️</div>
+      <div class="card-content">
+        <span class="label">Active Drivers</span>
+        <span class="value">{{ stats.activeDrivers }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="card-icon">🔄</div>
+      <div class="card-content">
+        <span class="label">Active Trips</span>
+        <span class="value">{{ stats.activeTrips }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card alert" [class.warning]="stats.lowFuelAlerts > 0">
+      <div class="card-icon">⛽</div>
+      <div class="card-content">
+        <span class="label">Low Fuel Alerts</span>
+        <span class="value">{{ stats.lowFuelAlerts }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card alert" [class.warning]="stats.expiringLicenses > 0">
+      <div class="card-icon">📄</div>
+      <div class="card-content">
+        <span class="label">Expiring Licenses</span>
+        <span class="value">{{ stats.expiringLicenses }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="card-icon">📏</div>
+      <div class="card-content">
+        <span class="label">Distance (This Month)</span>
+        <span class="value">{{ stats.totalDistanceKm | number:'1.0-0' }} km</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="card-icon">⛽📈</div>
+      <div class="card-content">
+        <span class="label">Avg Fuel Efficiency</span>
+        <span class="value">{{ stats.avgFuelEfficiency | number:'1.1-1' }} km/l</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="chart-section" *ngIf="!isLoading && dailyActivity.length">
+    <h3>Fuel Consumption Trend (Last 7 Days)</h3>
+    <canvas #fuelChart width="400" height="200"></canvas>
+  </div>
+
+  <!-- Recent Trips Table -->
+  <div class="recent-section" *ngIf="!isLoading">
+    <h3>Recent Trips</h3>
+    <table class="trips-table">
+      <thead>
+        <tr><th>Vehicle</th><th>Driver</th><th>Start Time</th><th>End Time</th><th>Distance (km)</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let trip of recentTrips">
+          <td>{{ trip.vehiclePlate }}</td>
+          <td>{{ trip.driverName }}</td>
+          <td>{{ trip.startTime | date:'short' }}</td>
+          <td>{{ trip.endTime ? (trip.endTime | date:'short') : '—' }}</td>
+          <td>{{ trip.distanceKm || 0 | number:'1.0-0' }}</td>
+          <td><span class="status-badge" [ngClass]="trip.status.toLowerCase().replace(' ', '-')">{{ trip.status }}</span></td>
+        </tr>
+        <tr *ngIf="recentTrips.length === 0"><td colspan="6">No recent trips found.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

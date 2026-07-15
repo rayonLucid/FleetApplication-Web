@@ -1,0 +1,118 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 260px;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: #cbd5e1;
+  transition: width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+
+  &.collapsed {
+    width: 70px;
+    .sidebar-header .logo, .nav-menu .label, .logout-btn .label {
+      display: none;
+    }
+    .sidebar-header .logo-icon {
+      display: block;
+    }
+    .nav-menu .icon, .logout-btn .icon {
+      margin-right: 0;
+    }
+  }
+
+  .sidebar-header {
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 1px;
+    }
+    .logo-icon {
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      display: none;
+    }
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 20px;
+      cursor: pointer;
+      &:hover { color: white; }
+    }
+  }
+
+  .nav-menu {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+    flex: 1;
+
+    li {
+      margin: 8px 12px;
+      a {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #cbd5e1;
+        transition: all 0.2s;
+        .icon {
+          font-size: 22px;
+          margin-right: 16px;
+          width: 24px;
+          text-align: center;
+        }
+        .label {
+          font-size: 15px;
+          font-weight: 500;
+        }
+        &:hover {
+          background: #334155;
+          color: white;
+        }
+        &.active {
+          background: #3b82f6;
+          color: white;
+          box-shadow: 0 4px 8px rgba(59,130,246,0.3);
+          .icon { color: white; }
+        }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 20px 16px;
+    border-top: 1px solid #334155;
+    .logout-btn {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #f87171;
+      transition: all 0.2s;
+      .icon { font-size: 20px; margin-right: 16px; }
+      .label { font-size: 15px; font-weight: 500; }
+      &:hover {
+        background: #7f1d1d20;
+        color: #fecaca;
+      }
+    }
+  }
+}

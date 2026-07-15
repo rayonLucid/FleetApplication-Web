@@ -1,0 +1,15 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+}
+.main-content {
+  flex: 1;
+  margin-left: 260px;          /* match sidebar width */
+  transition: margin-left 0.3s ease;
+  padding: 24px;
+  background: #f8fafc;
+}
+/* When sidebar is collapsed (you'll need to share state) – optional */
+:host-context(.sidebar-collapsed) .main-content {
+  margin-left: 70px;
+}

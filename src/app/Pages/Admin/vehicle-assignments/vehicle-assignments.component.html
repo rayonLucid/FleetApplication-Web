@@ -1,0 +1,83 @@
+<div class="assignments-container">
+  <div class="header">
+    <h2>🔗 Vehicle Assignments</h2>
+    <div class="actions">
+      <button class="btn-outline" (click)="toggleHistory()">
+        {{ showHistory ? 'Hide History' : 'Show History' }}
+      </button>
+      <button class="btn-primary" (click)="openAssignModal()">+ New Assignment</button>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search by vehicle, driver or reason..." [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" class="search-input" />
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading...</div>
+
+  <div class="cards-grid" *ngIf="!isLoading">
+    <div *ngFor="let a of filtered | paginate: { itemsPerPage: pageSize, currentPage: page }" class="assignment-card" [class.inactive]="!a.isActive">
+      <div class="card-header">
+        <span class="vehicle">{{ a.vehicleDisplay }}</span>
+        <span class="status" [class.active]="a.isActive">{{ a.isActive ? 'Active' : 'Ended' }}</span>
+      </div>
+      <div class="card-body">
+        <div><span class="label">Driver:</span> {{ a.driverName }}</div>
+        <div><span class="label">Assigned:</span> {{ a.assignedAt | date:'yyyy-MM-dd HH:mm' }}</div>
+        <div *ngIf="a.unassignedAt"><span class="label">Ended:</span> {{ a.unassignedAt | date:'yyyy-MM-dd HH:mm' }}</div>
+        <div *ngIf="a.reason"><span class="label">Reason:</span> {{ a.reason }}</div>
+      </div>
+      <div class="card-actions" *ngIf="a.isActive">
+        <button class="btn-end" (click)="openEndModal(a)">⏹️ End Assignment</button>
+      </div>
+    </div>
+    <div *ngIf="filtered.length === 0" class="no-data">No assignments found.</div>
+  </div>
+
+  <div class="pagination-container" *ngIf="filtered.length > pageSize">
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+
+<!-- Modal: New Assignment -->
+<div class="modal" *ngIf="showAssignModal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>Assign Driver to Vehicle</h3><button class="close" (click)="showAssignModal=false">&times;</button></div>
+    <div class="modal-body" style="display: flex;gap:12px;flex-direction:column">
+      <select [(ngModel)]="newAssignment.vehicleId" >
+        <option value="">Select Vehicle</option>
+        <option *ngFor="let v of vehicles" [value]="v.id">{{ v.plateNumber }} - {{ v.vehicleName }}</option>
+      </select>
+      <select [(ngModel)]="newAssignment.driverId" >
+        <option value="">Select Driver</option>
+        <option *ngFor="let d of drivers" [value]="d.id">{{ d.fullName }}</option>
+      </select>
+      <textarea type="text" placeholder="Reason (optional)" [(ngModel)]="newAssignment.reason" class="textarea" ></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showAssignModal=false">Cancel</button>
+      <button class="btn-save" (click)="createAssignment()">
+        @if(IsAssigning==true){
+          <i class="fa fa-spinner fa-spin"></i>  Assigning..
+        }@else{
+        Assign
+        }
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: End Assignment -->
+<div class="modal" *ngIf="showEndModal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>End Assignment</h3><button class="close" (click)="showEndModal=false">&times;</button></div>
+    <div class="modal-body">
+      <p>End assignment for <strong>{{ selectedAssignment?.vehicleDisplay }}</strong> (driver: {{ selectedAssignment?.driverName }})?</p>
+      <input type="text" placeholder="Reason (optional)" #endReason class="full-width" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showEndModal=false">Cancel</button>
+      <button class="btn-save" (click)="endAssignment(endReason.value)">Confirm End</button>
+    </div>
+  </div>
+</div>

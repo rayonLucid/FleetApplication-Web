@@ -1,0 +1,66 @@
+<div class="driver-edit-container">
+  <div class="form-header">
+    <h2>Edit Driver Profile</h2>
+    <p>Modify multi-tenant fleet resource parameters securely.</p>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <form *ngIf="editForm" [formGroup]="editForm" (ngSubmit)="onSubmit()" class="edit-form">
+
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text"
+             formControlName="fullName"
+             [class.input-invalid]="isFieldInvalid('fullName')"
+             class="form-input" />
+      <p *ngIf="isFieldInvalid('fullName')" class="error-text">Full name parameter is mandatory (max 100 characters).</p>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="text"
+             formControlName="phoneNumber"
+             [class.input-invalid]="isFieldInvalid('phoneNumber')"
+             class="form-input" />
+      <p *ngIf="isFieldInvalid('phoneNumber')" class="error-text">Please provide a valid corporate phone contact sequence.</p>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label class="form-label">License Number</label>
+        <input type="text"
+               formControlName="licenseNumber"
+               [class.input-invalid]="isFieldInvalid('licenseNumber')"
+               class="form-input" />
+        <p *ngIf="isFieldInvalid('licenseNumber')" class="error-text">Driver permit serial is required.</p>
+      </div>
+
+      <div class="form-group flex-1">
+        <label class="form-label">License Expiry Date</label>
+        <input type="date"
+               formControlName="licenseExpiryDate"
+               [class.input-invalid]="isFieldInvalid('licenseExpiryDate')"
+               class="form-input" />
+        <p *ngIf="isFieldInvalid('licenseExpiryDate')" class="error-text">Expiration date checkpoint required.</p>
+      </div>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="isActive" formControlName="isActive" class="form-checkbox" />
+      <label for="isActive" class="checkbox-label">Active Duty Deployment Status</label>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="editForm.invalid || isSubmitting" class="btn-submit">
+        <span *ngIf="isSubmitting" class="spinner"></span>
+        <span>{{ isSubmitting ? 'Saving System Changes...' : 'Update Fleet Resource' }}</span>
+      </button>
+    </div>
+  </form>
+</div>

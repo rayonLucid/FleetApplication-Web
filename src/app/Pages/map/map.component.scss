@@ -1,0 +1,154 @@
+
+/* At the very top of styles.scss */
+
+
+.map-frame {
+  height: 100vh;
+  width: 100%;
+  display: block;
+
+}
+.setup-controls{
+  display: flex !important;
+  flex:1;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+.info-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.info-panel h3 {
+  margin-top: 0;
+}
+
+.info-panel ul {
+  padding-left: 20px;
+  margin-bottom: 0;
+}
+
+// Variables for consistent dashboard styling
+$primary-color: #3498db;
+$text-dark: #2c3e50;
+$text-muted: #7f8c8d;
+$bg-hover: #f8f9fa;
+$border-color: #eaeded;
+$radius: 6px;
+$transition: all 0.2s ease-in-out;
+
+.live-vehicles-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 100%;
+
+  li {
+    border-bottom: 1px solid $border-color;
+    transition: $transition;
+
+    &:last-child {
+      border-bottom: none; // Remove border for the last item
+    }
+
+    &:hover {
+      background-color: $bg-hover;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; // Pushes plate to the right side
+      padding: 12px 16px;
+      color: $text-dark;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+
+      &.active {
+      background-color: #e6f7ff; // Light blue subtle background
+      border-left: 4px solid #1890ff; // Primary color accent bar on the left
+
+      strong {
+        color: #1890ff; // Highlight driver name text color
+      }
+
+      .plate-badge {
+        background-color: #1890ff; // Make the plate badge stand out
+        color: #fff;
+      }
+    }
+
+    // Optional: Add a subtle hover effect for unselected items
+    &:hover:not(.active) {
+      background-color: #f5f5f5;
+    }
+      // Driver Name Styling
+      strong {
+        font-weight: 600;
+        color: $text-dark;
+        position: relative;
+        padding-left: 14px;
+
+        // Small green active tracking dot before the driver's name
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 6px;
+          height: 6px;
+          background-color: #2ecc71; // Active Green
+          border-radius: 50%;
+        }
+      }
+
+      // Vehicle Plate Styling (Styled like a miniature physical plate badge)
+      &::after {
+        content: attr(data-plate); // Optional fallback if you want to use data attributes
+      }
+
+      // Targeting the text node or a fallback styling separation
+      color: $text-muted;
+      font-family: 'Courier New', Courier, monospace; // Gives plate numbers a mechanical look
+      background-color: #f1f2f6;
+      padding: 4px 8px;
+      border-radius: $radius - 2px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      border: 1px solid darken(#f1f2f6, 5%);
+    }
+  }
+}
+.plate-badge {
+  color: #34495e;
+  font-family: 'SF Mono', Consolas, monospace;
+  background-color: #dfe4ea;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  border: 1px solid #ced6e0;
+}

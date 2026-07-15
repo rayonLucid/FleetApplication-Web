@@ -92,3 +92,415 @@ button.active {
     &:hover { background: #e0e0e0; }
   }
 }
+
+select {
+  // Base styling
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1a1a2e;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  // Hover state
+  &:hover {
+    border-color: #2196f3;
+    background-color: #f5f7fa;
+  }
+
+  // Focus state
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  }
+
+  // Disabled state
+  &:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #d0d0d0;
+  }
+
+  // Invalid/error state
+  &:invalid,
+  &.invalid {
+    border-color: #d63031;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(214, 48, 49, 0.1);
+    }
+  }
+
+  // Valid state
+  &:valid,
+  &.valid {
+    border-color: #00b894;
+  }
+
+  // Arrow icon (remove default and add custom)
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+
+  // Webkit arrow removal
+  &::-ms-expand {
+    display: none;
+  }
+}
+
+// Select wrapper (for better styling control)
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  select {
+    width: 100%;
+    padding-right: 40px; // Space for custom arrow
+  }
+
+  // Custom arrow
+  &::after {
+    content: '▼';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 12px;
+    pointer-events: none;
+  }
+}
+
+// Select group (with label)
+.select-group {
+  margin-bottom: 20px;
+
+  .select-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  select {
+    width: 100%;
+  }
+
+  .select-help {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .select-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #d63031;
+    font-weight: 500;
+  }
+}
+
+// Multiple select
+select[multiple] {
+  padding: 0;
+  max-height: 200px;
+
+  option {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:selected {
+      background-color: #e8f4fd;
+      color: #2196f3;
+    }
+  }
+}
+
+// Option styling (limited support - browser dependent)
+option {
+  padding: 10px 16px;
+  color: #1a1a2e;
+  background-color: white;
+
+  &:hover {
+    background-color: #f5f7fa;
+  }
+
+  &:selected {
+    background-color: #e8f4fd;
+    color: #2196f3;
+  }
+
+  // Disabled option
+  &:disabled {
+    color: #999;
+    background-color: #f5f5f5;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  select {
+    background-color: #2d2d44;
+    color: #e0e0e0;
+    border-color: #444;
+
+    &:hover {
+      background-color: #3d3d5c;
+      border-color: #2196f3;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+    }
+
+    option {
+      background-color: #2d2d44;
+      color: #e0e0e0;
+
+      &:selected {
+        background-color: #3d3d5c;
+        color: #2196f3;
+      }
+    }
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  .close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+}
+.modal-body {
+  padding: 24px;
+}
+// Modal Footer
+.modal-footer {
+  display: flex;
+  justify-content: flex-end; // Right-aligned buttons
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #e0e0e0;
+  background-color: white;
+  border-radius: 0 0 8px 8px;
+}
+
+// Cancel Button
+.btn-cancel {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  background-color: #f5f5f5;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  // Hover state
+  &:hover {
+    background-color: #e8e8e8;
+    border-color: #c0c0c0;
+    color: #333;
+  }
+
+  // Focus state
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  }
+
+  // Active/Click state
+  &:active {
+    background-color: #d0d0d0;
+    transform: scale(0.98);
+  }
+}
+
+// Save Button
+.btn-save {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background-color: #2196f3;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  // Hover state
+  &:hover {
+    background-color: #1976d2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  }
+
+  // Focus state
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+  }
+
+  // Active/Click state
+  &:active {
+    background-color: #0d47a1;
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+  }
+
+  // Disabled state
+  &:disabled {
+    background-color: #b0b0b0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// Optional: Full-width buttons for mobile
+@media (max-width: 640px) {
+  .modal-footer {
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-cancel,
+  .btn-save {
+    width: 100%;
+  }
+}
+
+// Optional: Dark mode support
+@media (prefers-color-scheme: dark) {
+  .modal-footer {
+    border-top: 1px solid #444;
+    background-color: #2d2d44;
+  }
+
+  .btn-cancel {
+    background-color: #3d3d5c;
+    color: #e0e0e0;
+    border-color: #555;
+
+    &:hover {
+      background-color: #4d4d6c;
+      border-color: #2196f3;
+    }
+  }
+
+  .btn-save {
+    background-color: #2196f3;
+
+    &:hover {
+      background-color: #1976d2;
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+  }
+}
+
+// 1. Variables (Customize these to match your theme)
+$input-border-color: #cbd5e1;
+$input-focus-border: #3b82f6;      // Modern blue accent
+$input-focus-shadow: rgba(59, 130, 246, 0.15);
+$input-text-color: #1e293b;
+$input-bg: #ffffff;
+$input-padding: 0.75rem 1rem;
+$input-radius: 6px;
+$transition-speed: 0.2s ease-in-out;
+
+// 2. Shared Styles Mixin (Applies to both text and number)
+@mixin base-input-styles {
+  width: 100%;
+  padding: $input-padding;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: $input-text-color;
+  background-color: $input-bg;
+  border: 1px solid $input-border-color;
+  border-radius: $input-radius;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color $transition-speed, box-shadow $transition-speed;
+
+  // Placeholder styling
+  &::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+  }
+
+  // Focus State
+  &:focus {
+    border-color: $input-focus-border;
+    box-shadow: 0 0 0 4px $input-focus-shadow;
+  }
+
+  // Disabled State
+  &:disabled {
+    background-color: #f1f5f9;
+    color: #64748b;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+  }
+}
+
+// 3. Application to Target Input Types
+input[type="text"],
+input[type="number"] {
+  @include base-input-styles;
+}
+
+// 4. Specific Number Input Clean-up (Optional)
+// This removes the default up/down arrows (spinners) if you want a cleaner UI
+input[type="number"] {
+  -moz-appearance: textfield; // Firefox
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none; // Chrome, Safari, Edge
+    margin: 0;
+  }
+}
