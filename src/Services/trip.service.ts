@@ -42,6 +42,13 @@ updateTrip(id: string, data: any): Observable<void> {
   endTrip(tripId: string, endLocation?: string, distanceKm?: number, deliveriesComplete?: number): Observable<void> {
   return this.http.put<void>(`${this.apiUrl}/end`, { tripId, endLocation, distanceKm, deliveriesComplete });
 }
+ UpdateTripStatus(tripId: string, Status?: string): Observable<any> {
+  return this.http.put<any>(`${this.apiUrl}/updateTripStatus`, { tripId, Status});
+}
+
+ DriverendTrip(tripId: string, endLocation?: string, distanceKm?: number, deliveriesComplete?: number): Observable<void> {
+  return this.http.put<void>(`${this.apiUrl}driver/end`, { tripId, endLocation, distanceKm, deliveriesComplete });
+}
 
   deleteTrip(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);

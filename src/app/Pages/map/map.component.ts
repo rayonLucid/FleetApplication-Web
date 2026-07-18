@@ -101,7 +101,7 @@ if (this.geofenceCircle) this.map.removeLayer(this.geofenceCircle);
   if (this.routeLine) { this.map.removeLayer(this.routeLine); this.routeLine = null; }
 
       // Check if the moving vehicle matches the trip the dispatcher is currently watching
-      if (this.selectedTrip && this.selectedTrip.imei === data.imei) {
+      if (this.selectedTrip && this.selectedTrip.vehicleId === data.vehicleId) {
         const currentPos = L.latLng(data.latitude, data.longitude);
 
         // 1. Update Map UI (Marker and Path)
@@ -157,7 +157,7 @@ if (this.geofenceCircle) this.map.removeLayer(this.geofenceCircle);
   if (this.routeLine) { this.map.removeLayer(this.routeLine); this.routeLine = null; }
 
       // Check if the moving vehicle matches the trip the dispatcher is currently watching
-      if (this.selectedTrip && this.selectedTrip.imei === data.imei) {
+      if (this.selectedTrip && this.selectedTrip.vehicleId === data.vehicleId) {
         const currentPos = L.latLng(data.latitude, data.longitude);
 
         // 1. Update Map UI (Marker and Path)
@@ -198,20 +198,20 @@ if (this.geofenceCircle) this.map.removeLayer(this.geofenceCircle);
  private updateOrAddMarker(update: GpsUpdate): void {
     const latlng = L.latLng(update.latitude, update.longitude);
     const popupContent = `
-      <b>IMEI:</b> ${update.imei}<br>
+      <b>IMEI:</b> ${update.vehicleId}<br>
       <b>Speed:</b> ${update.speed} km/h<br>
       <b>Time:</b> ${new Date(update.timestamp).toLocaleTimeString()}
     `;
 
-    if (this.markers.has(update.imei)) {
+    if (this.markers.has(update.vehicleId)) {
       // Update existing marker
-      const marker = this.markers.get(update.imei);
+      const marker = this.markers.get(update.vehicleId);
       marker?.setLatLng(latlng);
       marker?.setPopupContent(popupContent);
     } else {
       // Add new marker
       const marker = L.marker(latlng).addTo(this.map).bindPopup(popupContent);
-      this.markers.set(update.imei, marker);
+      this.markers.set(update.vehicleId, marker);
     }
 
     // Center map on the latest vehicle (optional)
@@ -640,7 +640,7 @@ selectVehicle(selectedTrip: RecentTrip): void {
   // 1. Save this trip so the SignalR listener knows which vehicle to filter for
   this.selectedTrip = selectedTrip;
 //console.log(selectedTrip)
-  if (this.selectedTrip && this.selectedTrip.imei === this.driverData?.imei) {
+  if (this.selectedTrip && this.selectedTrip.imei === this.driverData?.vehicleId) {
     // Clear existing map layers
     if (this.geofenceLayerGroup) {
       this.map.removeLayer(this.geofenceLayerGroup);
@@ -665,7 +665,7 @@ if (this.destinationMarker) {
  // Now add the driver's start marker and route line
         if (!this.carMarker) {
           this.carMarker = L.marker(startLatLng, { icon: this.icon })
-          .bindTooltip(`<b>Vehichle:</b><br>${this.driverData?.imei}`)
+          .bindTooltip(`<b>Vehichle:</b><br>${this.driverData?.vehicleId}`)
           .addTo(this.map);
           this.routeLine = L.polyline([startLatLng], { color: '#3498db' }).addTo(this.map);
         }

@@ -6,7 +6,7 @@ import { LoginCredentials, AuthResponse, DecodedToken } from '../Data/data-inter
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { ConfigService } from '../app/config.service';
-
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 
 
@@ -15,16 +15,17 @@ import { ConfigService } from '../app/config.service';
 })
 export class AuthService {
  // config = inject(ConfigService)
-
+ private jwtHelper = new JwtHelperService();
   private readonly TOKEN_KEY = 'token';
-  private authUrl = ``;
-  constructor(private http: HttpClient,private toastr: ToastrService,private router:Router,private readonly urlConfig :ConfigService) {
-    let url =sessionStorage.getItem(this.urlConfig.appUrl)
-    this.authUrl = `${url}auth/login`;
-    console.log(this.authUrl)
+
+  constructor(private http: HttpClient,private toastr: ToastrService
+    ,private router:Router,private readonly urlConfig :ConfigService) {
+
 
   }
-
+ get authUrl(): string {
+  return `${this.urlConfig.apiUrl}auth/login`;
+}
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(this.authUrl, credentials).pipe(
       tap(response => {
@@ -47,6 +48,7 @@ export class AuthService {
    */
   public getDecodedToken(): DecodedToken | null {
     const token = this.getToken();
+    //console.log(token)
     if (!token) return null;
 
     try {
@@ -67,15 +69,35 @@ export class AuthService {
   }
 
     public getRole(): string | null {
-    const decoded = this.getDecodedToken();
-    return decoded ? decoded.role : null;
+    const token = this.getToken()!;
+     const decoded = this.jwtHelper.decodeToken(token);
+
+  //  console.log(decoded)
+    return decoded ? decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : null;
   }
 
+    public getUserName(): string{
+    const token = this.getToken()!;
+     const decoded = this.jwtHelper.decodeToken(token);
+
+   // console.log(decoded)
+    return decoded ? decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : '';
+  }
+ public getLicenseNumber(): string | null {
+    const token = this.getToken()!;
+     const decoded = this.jwtHelper.decodeToken(token);
+
+    // console.log(decoded)
+    return decoded ? decoded['licenseNumber'] : null;
+  }
   /**
    * 🌟 ENHANCED: Check if logged in AND ensure token isn't expired
    */
   public isLoggedIn(): boolean {
     const decoded = this.getDecodedToken();
+    //  const token = this.getToken();
+    //  let expired = this.jwtHelper.isTokenExpired(token)
+
     if (!decoded || !decoded.exp) {
     //console.warn('Token missing or invalid');
     return false;
@@ -113,7 +135,9 @@ public isSessionExpiringSoon(): boolean {
   public logout(): void {
     let isloggedout =this.isLoggedIn()
     console.log(isloggedout)
-    if(this.getToken()!=null &&  isloggedout==true ){
+      const token = this.getToken();
+      let expired = this.jwtHelper.isTokenExpired(token)
+    if(token !=null &&  expired==true ){
        this.toastr.error('Your session has expired. Please log in again.', 'Session Expired');
     }
     sessionStorage.removeItem(this.TOKEN_KEY);

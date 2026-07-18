@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../Services/auth.service';
+import { ConfigService } from '../../config.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -20,8 +22,10 @@ cdr =inject(ChangeDetectorRef)
   constructor(
     private fb: FormBuilder,
     private authService: AuthService, // 🌟 Injected the new service tier
-    private router: Router
-  ) {}
+    private router: Router,private toast:ToastrService
+  ) {
+   
+  }
 
   ngOnInit(): void {
     // Structural flush: ensure stale authentication tokens are purged on initialization
@@ -72,10 +76,12 @@ cdr =inject(ChangeDetectorRef)
     }
       },
       error: (err) => {
-      //  console.log(err)
+        console.log("Error",err)
         this.errorMessage = err?.error?.message || 'Please Confirm your Api is running or Check your internet connection';
         this.isSubmitting = false;
+
         this.cdr.detectChanges()
+        this.toast.error(this.errorMessage!)
       }
     });
   }

@@ -38,11 +38,12 @@ export interface GpsData {
   timestamp: number
 }
 export interface GpsUpdate {
-  imei: string;
+//  imei: string;
   latitude: number;
   longitude: number;
   speed: number;
-  timestamp: number;
+  timestamp: string;
+  vehicleId:string
 }
 
 export interface DriverUpdatePayload{
@@ -50,7 +51,7 @@ export interface DriverUpdatePayload{
   fullName: string;          // Maps to C# string FullName
   phoneNumber: string;       // Maps to C# string PhoneNumber
   licenseNumber: string;     // Maps to C# string LicenseNumber
-  licenseExpiryDate: string; // Maps to C# DateTime (sent as ISO string from HTML input)
+  licenseExpiryDate: Date; // Maps to C# DateTime (sent as ISO string from HTML input)
   isActive: boolean;
 }
 export interface DriverOnboardingPayload {
@@ -83,6 +84,8 @@ export interface CurrentTripInfo {
   totalDeliveries: number;
   id:string
   imei:string
+  vehicleId:string
+  
 }
 
 export interface DriverDashboardStats {
@@ -109,6 +112,9 @@ export interface DriverDashboardStats {
   expiringLicenses: number;
   totalDistanceKm: number;
   avgFuelEfficiency: number;
+   vehiclesUnderMaintenance: number;   // new
+  vehiclesDueForMaintenance: number;
+  expiredLicenses:number
 }
 
 export interface RecentTrip {
@@ -215,4 +221,15 @@ export interface Vehicle {
   id: string;
   plateNumber: string;
   vehicleName?: string;
+}
+export interface MaintenanceRecord {
+  id: string;
+  vehicleId: string;
+  vehicleDisplay: string;
+  serviceType: string;
+  description?: string;
+  cost?: number;
+  serviceDate: string;
+  nextServiceDate?: string;
+  createdAt: string;
 }

@@ -8,6 +8,7 @@ import { GeofenceService } from '../../../../Services/geofence.service';
 import { MapService } from '../../../../Services/map.service';
 import id from '@angular/common/locales/id';
 import { forkJoin } from 'rxjs';
+import { VehicleService } from '../../../../Services/vehicle.service';
 
 
 @Component({
@@ -40,14 +41,14 @@ mapService =inject(MapService)
   allVehicles: Vehicle[] = [];
   assignedVehicles: Vehicle[] = [];
   selectedVehicleIds: string[] = [];
-
+radius =0
   // Map
   @ViewChild('mapContainer') mapContainer!: ElementRef;
   private map: L.Map | null = null;
   private marker: L.Marker | null = null;
   private circle: L.Circle | null = null;
 
-  constructor(private geofenceService: GeofenceService) {}
+  constructor(private geofenceService: GeofenceService,private vehicleService:VehicleService) {}
 
   ngOnInit(): void {
     this.loadGeofences();
@@ -55,6 +56,7 @@ mapService =inject(MapService)
   }
 
   ngAfterViewInit(): void {
+   // this.initMap()
     // Map is initialized when modal opens
   }
 
@@ -74,7 +76,7 @@ mapService =inject(MapService)
   }
 
   loadAllVehicles(): void {
-    this.geofenceService.getAllVehicles().subscribe(
+    this.vehicleService.getVehiclesToAssign().subscribe(
       data => {
       this.allVehicles = data
     //  console.log(data)
@@ -124,14 +126,26 @@ this.mapService.performSearch(searchQuery).then(data => {
   }
 
   openEditModal(geofence: Geofence): void {
+    console.log(geofence)
     this.isEditMode = true;
     this.selectedGeofenceId = geofence.id;
     this.formData = { ...geofence };
     this.tempCenter = { lat: geofence.centerLatitude, lng: geofence.centerLongitude };
+   this. UpdateMapFromCoordinates(geofence.centerLatitude,geofence.centerLongitude)
     this.showFormModal = true;
-    setTimeout(() => this.initMap(), 100);
+    this.radius =geofence.radiusMeters
+    setTimeout(() => this.initMap(), 1000);
+   // this.updateMapOverlays()
   }
-
+UpdateMapFromCoordinates(lat:number,lon:number){
+fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`)
+  .then(r => r.json())
+  .then(data => {
+   // console.log(data.display_name);
+    this.formData.address =data.display_name
+    this.cdr.markForCheck()
+  });
+}
   closeFormModal(): void {
     this.showFormModal = false;
     this.destroyMap();
@@ -169,22 +183,30 @@ Issaving =false
 
   // ---- MAP ----
   private initMap(): void {
+   // console.log(this.mapContainer)
     if (!this.mapContainer) return;
     this.destroyMap();
 
     const lat = this.tempCenter?.lat || 0;
     const lng = this.tempCenter?.lng || 0;
+    const radius =this.radius||0
+   // console.log(lng)
     this.map = L.map(this.mapContainer.nativeElement, { center: [lat, lng], zoom: 13 });
+    // console.log(this.map)
+    this.cdr.markForCheck()
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
-
-
+  this.marker = L.marker([lat, lng],{ icon:this.mapService.icon }).addTo(this.map);
+   this.circle = L.circle([lat, lng], { radius, color: 'blue', fillOpacity: 0.2 }).addTo(this.map)
+this.cdr.markForCheck()
 
     // If we have a temp center, show marker and circle
 
   }
 
   private updateMapOverlays(): void {
+     console.log(this.map)
     if (!this.map || !this.tempCenter) return;
+
     if (this.marker) this.marker.remove();
     if (this.circle) this.circle.remove();
 

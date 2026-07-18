@@ -1,0 +1,83 @@
+<div class="maintenance-container">
+  <div class="header">
+    <h2>🔧 Maintenance Records</h2>
+    <div class="actions">
+      <button class="btn-outline" (click)="toggleCompleted()">
+        {{ showCompleted ? 'Hide Completed' : 'Show Completed' }}
+      </button>
+      <button class="btn-primary" (click)="openCreateModal()">+ Add Record</button>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" placeholder="Search by vehicle or service..." [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" class="search-input" />
+    <select [(ngModel)]="filterVehicleId" (ngModelChange)="onVehicleFilterChange()" class="filter-select">
+      <option value="">All Vehicles</option>
+      <option *ngFor="let v of vehicles" [value]="v.id">{{ v.plateNumber }} - {{ v.vehicleName }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading...</div>
+
+  <div class="cards-grid" *ngIf="!isLoading">
+    <div *ngFor="let rec of filteredRecords | paginate: { itemsPerPage: pageSize, currentPage: page }" class="record-card" [class.overdue]="rec.nextServiceDate && rec.nextServiceDate < today">
+      <div class="card-header">
+        <span>{{ rec.vehicleDisplay }}</span>
+        <span class="service-type">{{ rec.serviceType }}</span>
+      </div>
+      <div class="card-body">
+        <div><span class="label">Service Date:</span> {{ rec.serviceDate | date:'yyyy-MM-dd' }}</div>
+        <div *ngIf="rec.nextServiceDate"><span class="label">Next Service:</span> {{ rec.nextServiceDate | date:'yyyy-MM-dd' }}</div>
+        <div><span class="label">Cost:</span> {{ rec.cost ? (rec.cost | currency) : '—' }}</div>
+        <div *ngIf="rec.description"><span class="label">Notes:</span> {{ rec.description }}</div>
+      </div>
+      <div class="card-actions">
+        <button (click)="openEditModal(rec)">✏️ Edit</button>
+        <button class="delete" (click)="deleteRecord(rec.id)">🗑️ Delete</button>
+      </div>
+    </div>
+    <div *ngIf="filteredRecords.length === 0" class="no-data">No records found.</div>
+  </div>
+
+  <div class="pagination-container" *ngIf="filteredRecords.length > pageSize">
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+
+<!-- Modal: Create/Edit -->
+<div class="modal" *ngIf="showFormModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>{{ isEditMode ? 'Edit Maintenance Record' : 'Add Maintenance Record' }}</h3>
+      <button class="close" (click)="closeFormModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <select [(ngModel)]="formData.vehicleId" class="full-width">
+        <option value="">Select Vehicle</option>
+        <option *ngFor="let v of vehicles" [value]="v.id">{{ v.plateNumber }} - {{ v.vehicleName }}</option>
+      </select>
+      <input type="text" placeholder="Service Type (e.g., Oil Change)" [(ngModel)]="formData.serviceType" class="full-width" />
+      <textarea placeholder="Description (optional)" [(ngModel)]="formData.description" class="full-width" rows="3"></textarea>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Service Date</label>
+          <input type="date" [(ngModel)]="formData.serviceDate" class="full-width" />
+        </div>
+        <div class="form-group">
+          <label>Next Service Date</label>
+          <input type="date" [(ngModel)]="formData.nextServiceDate" class="full-width" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Cost (optional)</label>
+        <input type="number" step="0.01" placeholder="0.00" [(ngModel)]="formData.cost" class="full-width" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeFormModal()">Cancel</button>
+      <button class="btn-save" (click)="saveRecord()" [disabled]="IsSaving">
+        {{ IsSaving ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</div>

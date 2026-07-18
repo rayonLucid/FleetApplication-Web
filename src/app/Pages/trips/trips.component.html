@@ -5,7 +5,11 @@
       <button class="btn-outline" (click)="toggleHistory()">
         {{ showHistory ? 'Hide History' : 'Show History' }}
       </button>
-      <button class="btn-primary" (click)="openStartModal()">+ Create Trip</button>
+      <button class="btn-primary" (click)="openStartModal()">
+
+        <span> + Create Trip</span>
+
+      </button>
     </div>
   </div>
 
@@ -31,7 +35,7 @@
       <div class="card-actions">
           <button class="btn-edit" (click)="openEditModal(trip)">✏️ Edit</button>
         <button *ngIf="!trip.endTime" class="btn-end" (click)="openEndModal(trip)">🏁 End Trip</button>
-        <button class="btn-delete" (click)="deleteTrip(trip.id)">🗑️ Delete</button>
+        <!-- <button class="btn-delete" (click)="deleteTrip(trip.id)">🗑️ Delete</button> -->
       </div>
     </div>
     <div *ngIf="filteredTrips.length === 0" class="no-data">No trips found.</div>

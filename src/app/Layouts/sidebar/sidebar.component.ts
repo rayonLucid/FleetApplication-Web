@@ -27,6 +27,7 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.userRole = this.authService.getRole();
+  //  console.log(this.userRole)
     this.buildMenu();
   }
 
@@ -40,7 +41,8 @@ export class SidebarComponent implements OnInit {
       { label: 'Trips', icon: '🔄', route: '/trips', roles: ['Admin'] },
       { label: 'Geofences', icon: '🌍', route: '/geofences', roles: ['Admin'] },
       { label: 'My Dashboard', icon: '📱', route: '/driver-dashboard', roles: ['Driver'] },
-      { label: 'My Trips', icon: '🚗', route: '/my-trips', roles: ['Driver'] }
+      { label: 'My Trips', icon: '🚗', route: '/my-trips', roles: ['Driver'] },
+      { label: 'Vehicle Maintenance', icon: '🛠️', route: '/maintenance', roles: ['Admin'] }
     ];
   }
 

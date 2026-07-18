@@ -1,7 +1,7 @@
 {
  "apiUrl": "https://localhost:7168/api/",
   "payStackPublicKey": "pk_test_1234567890abcdefg",
-  "rootUrl": "",
+  "rootUrl": "https://localhost:7168/",
   "appName": "",
   "appVersion": "",
   "tokenKey": "",

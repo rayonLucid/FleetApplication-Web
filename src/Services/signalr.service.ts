@@ -18,18 +18,21 @@ private vehicleUpdateSubject = new Subject<GpsUpdate>();
   public locationUpdates$ = this.locationSubject.asObservable();
 public vehicleUpdateSubject$ =this.vehicleUpdateSubject.asObservable()
  authService =inject(AuthService)
+private readonly urlConfig =inject(ConfigService)
+get baseUrl():string {
+  return this.urlConfig.rootUrl
+}
+  constructor(private offlineDb: OfflineDbService) {
 
-  constructor(private offlineDb: OfflineDbService,private urlConfig:ConfigService) {
-  let url =sessionStorage.getItem(this.urlConfig.approotUrl)!
     // Use your actual backend URL (adjust port if needed)
-    const baseUrl =url; // or your production URL
-
+  //  const baseUrl =this.authService.get; // or your production URL
+//console.log(`${this.baseUrl}trackingHub`)
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${baseUrl}/trackingHub`,
+      .withUrl(`${this.baseUrl}trackingHub`,
         {
           // 🌟 SignalR intercepts this factory callback natively before firing the handshake
         accessTokenFactory: () => {
-          const userToken = localStorage.getItem('token'); // Retrieve the JWT returned from step 1
+          const userToken = this.authService.getToken(); // Retrieve the JWT returned from step 1
           return userToken ? userToken : '';
         }
         }
@@ -61,9 +64,7 @@ this.hubConnection.onreconnected(() => {
 });
   }
 
-  public startConnection(): Promise<void> {
-    return this.hubConnection.start();
-  }
+
 
   public stopConnection(): void {
     this.hubConnection.stop();
@@ -71,13 +72,20 @@ this.hubConnection.onreconnected(() => {
 // Inside your Angular Service (e.g., TrackingService)
 public async sendVehicleLocation(vehicleData:any): Promise<void> {
     // const { companyId, ...vehicleData } = payload;
+      // console.log(vehicleData)
  if (this.isConnected) {
       // 1. If online, try sending immediately
       try {
-        console.log(vehicleData)
+
         await this.hubConnection.invoke('SendVehicleUpdate', vehicleData);
       } catch (err) {
-        console.error('Failed to send, caching instead', err);
+
+       const isHubError = err?.toString().includes('Failed to invoke');
+
+      if (isHubError) {
+console.log(err)
+        throw err; // Bubble up to the component (e.g., authorization failed)
+      }
        // this.cacheLocally(vehicleData);
        await this.saveToDexie(vehicleData.companyId, vehicleData);
       }
@@ -94,9 +102,9 @@ private async saveToDexie(companyId: string, geoData:OfflineGpsPing ): Promise<v
       companyId: companyId,
       latitude: geoData.latitude,
       longitude: geoData.longitude,
-      timestamp:  Date.now(),
+      timestamp: new Date().toISOString(),
       speed:geoData.speed,
-      imei:geoData.imei
+      vehicleId:geoData.vehicleId
     });
   }
 // Check if connection is actively connected
@@ -149,7 +157,7 @@ public async sendGpsUpdate(imei: string, lat: number, lng: number, speed: number
  async start(): Promise<void> {
     if (this.hubConnection.state === signalR.HubConnectionState.Disconnected) {
      let companyId =this.authService.getCompanyId()
-//console.log(companyId)
+
 await this.hubConnection.start()
     .then(() => {
       console.log('SignalR Connection Started!');
@@ -157,9 +165,17 @@ await this.hubConnection.start()
       // CALL THE HUB METHOD IMMEDIATELY AFTER CONNECTING!
       this.hubConnection.invoke('JoinCompanyGroup', companyId)
         .then(() => console.log(`Successfully joined company group: ${companyId}`))
-        .catch(err => console.error('Error joining company group:', err));
+        .catch(err =>
+          {
+            console.error('Error joining company group:', err)
+             throw err;
+          }
+          );
     })
-    .catch(err => console.log('Error while starting connection: ' + err));
+    .catch(err => {
+      console.log('Error while starting connection: ' + err)
+ throw err;
+    });
     }
   }
 

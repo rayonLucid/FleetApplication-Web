@@ -16,7 +16,7 @@ import { DriverUpdatePayload } from '../../../Data/data-interface';
 })
 export class DriverEditComponent implements OnInit {
   // Pass the target driver data via an Input property (e.g., from a list selection or modal context)
-  @Input() driverData!: DriverUpdatePayload;
+  @Input() driverData: DriverUpdatePayload|null =null;
 
   editForm!: FormGroup;
   isSubmitting = false;
@@ -29,26 +29,23 @@ export class DriverEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (!this.driverData) {
-      this.errorMessage = 'No driver records selected for modification.';
-      return;
-    }
+  console.log(this.driverData)
     this.initEditForm();
   }
 
   private initEditForm(): void {
     // Transform incoming expiry date to YYYY-MM-DD string format for safe HTML Date picker binding
-    const formattedExpiryDate = this.driverData.licenseExpiryDate
+    const formattedExpiryDate = this.driverData?.licenseExpiryDate
       ? new Date(this.driverData.licenseExpiryDate).toISOString().substring(0, 10)
       : '';
 
     this.editForm = this.fb.group({
-      id: [this.driverData.id],
-      fullName: [this.driverData.fullName, [Validators.required, Validators.maxLength(100)]],
-      phoneNumber: [this.driverData.phoneNumber, [Validators.required, Validators.pattern(/^[0-9+\s-]{7,20}$/)]],
-      licenseNumber: [this.driverData.licenseNumber, [Validators.required, Validators.maxLength(50)]],
+      id: [this.driverData?.id || 0],
+      fullName: [this.driverData?.fullName||"", [Validators.required, Validators.maxLength(100)]],
+      phoneNumber: [this.driverData?.phoneNumber||"", [Validators.required, Validators.pattern(/^[0-9+\s-]{7,20}$/)]],
+      licenseNumber: [this.driverData?.licenseNumber ||"", [Validators.required, Validators.maxLength(50)]],
       licenseExpiryDate: [formattedExpiryDate, [Validators.required]],
-      isActive: [this.driverData.isActive ?? true]
+      isActive: [this.driverData?.isActive ?? true]
     });
   }
 
@@ -69,7 +66,10 @@ export class DriverEditComponent implements OnInit {
     this.successMessage = null;
 
     const payload: DriverUpdatePayload = this.editForm.value;
-
+if(this.driverData?.id ==null || this.driverData.id ==0){
+this.CreateDriver(payload)
+  return
+}
     // Call your centralized Angular service tier mapping to your C# Controller endpoint
     this.driverService.updateDriver(payload.id, payload).subscribe({
       next: (response) => {
@@ -79,6 +79,19 @@ export class DriverEditComponent implements OnInit {
       },
       error: (err) => {
         this.errorMessage = err?.error?.message || 'An unexpected error occurred during database commit.';
+        this.isSubmitting = false;
+      }
+    });
+  }
+  CreateDriver(payload: DriverUpdatePayload) {
+     this.driverService.createDriver( payload).subscribe({
+      next: (response) => {
+        this.successMessage = response?.message || 'Driver profile Created successfully.';
+        this.isSubmitting = false;
+        this.editForm.markAsPristine();
+      },
+      error: (err) => {
+        this.errorMessage = err?.error || 'An unexpected error occurred during database commit.';
         this.isSubmitting = false;
       }
     });

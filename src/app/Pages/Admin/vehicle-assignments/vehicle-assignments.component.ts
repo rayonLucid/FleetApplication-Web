@@ -67,14 +67,15 @@ cdr =inject(ChangeDetectorRef)
     this.isLoading = true;
     this.http.get<Assignment[]>(`${this.apiUrl}?history=${this.showHistory}`).subscribe({
       next: (data) => {
-       // console.log(data)
+        console.log(data)
         this.assignments = data;
         this.applyFilter();
         this.isLoading = false;
         this.cdr.detectChanges()
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
+      //  console.log(err)
           this.cdr.detectChanges()}
     });
   }

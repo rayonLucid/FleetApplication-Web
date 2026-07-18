@@ -8,7 +8,7 @@
   <div *ngIf="error" class="error">{{ error }}</div>
 
   <div *ngIf="!isLoading && stats" class="stats-grid">
-    <div class="stat-card">
+    <div class="stat-card" (click)="openDetails('vehicles')">
       <div class="card-icon">🚛</div>
       <div class="card-content">
         <span class="label">Total Vehicles</span>
@@ -40,11 +40,19 @@
       </div>
     </div>
 
-    <div class="stat-card alert" [class.warning]="stats.expiringLicenses > 0">
+    <div class="stat-card alert" [class.warning]="stats.expiringLicenses > 0" (click)="openDetails('expiring-licenses')">
       <div class="card-icon">📄</div>
       <div class="card-content">
         <span class="label">Expiring Licenses</span>
         <span class="value">{{ stats.expiringLicenses }}</span>
+      </div>
+    </div>
+
+     <div class="stat-card alert" [class.warning]="stats.expiredLicenses > 0" (click)="openDetails('expired-licenses')">
+      <div class="card-icon">📄</div>
+      <div class="card-content">
+        <span class="label">Expired Licenses</span>
+        <span class="value">{{ stats.expiredLicenses }}</span>
       </div>
     </div>
 
@@ -63,6 +71,22 @@
         <span class="value">{{ stats.avgFuelEfficiency | number:'1.1-1' }} km/l</span>
       </div>
     </div>
+
+    <div class="stat-card" (click)="openDetails('maintenance')">
+  <div class="card-icon">🔧</div>
+  <div class="card-content">
+    <span class="label">Under Maintenance</span>
+    <span class="value">{{ stats.vehiclesUnderMaintenance }}</span>
+  </div>
+</div>
+
+<div class="stat-card">
+  <div class="card-icon">⚠️</div>
+  <div class="card-content">
+    <span class="label">Due for Maintenance</span>
+    <span class="value">{{ stats.vehiclesDueForMaintenance }}</span>
+  </div>
+</div>
   </div>
 
   <!-- Chart Section -->
@@ -91,4 +115,40 @@
       </tbody>
     </table>
   </div>
+
+
+
+  <!-- ===== DETAIL MODAL ===== -->
+
+<div class="modal-overlay" *ngIf="showDetailsModal" (click)="closeDetails()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ modalTitle }}</h3>
+      <button class="close-btn" (click)="closeDetails()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="modalLoading" class="loading">Loading details...</div>
+      <div *ngIf="modalError" class="error">{{ modalError }}</div>
+
+      <table *ngIf="!modalLoading && modalItems.length > 0" class="detail-table">
+        <thead>
+          <tr>
+            <th *ngFor="let col of modalColumns">{{ col.label }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of modalItems">
+            <td *ngFor="let col of modalColumns">{{ getProperty(item, col.key) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!modalLoading && modalItems.length === 0" class="no-data">No items found.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-close" (click)="closeDetails()">Close</button>
+    </div>
+  </div>
+</div>
+
 </div>

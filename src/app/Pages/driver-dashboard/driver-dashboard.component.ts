@@ -9,10 +9,11 @@ import { SignalRService } from '../../../Services/signalr.service';
 import { TripService } from '../../../Services/trip.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-driver-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './driver-dashboard.component.html',
   styleUrls: ['./driver-dashboard.component.scss']
 })
@@ -23,6 +24,9 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   isShiftActive = false;
   errorMessage = '';
   liveLocation: GpsUpdate | null = null;
+  licenseNumber:string =''
+  driverName=''
+  TripStatus :string="Loading"
   private gpsSubscription: Subscription | null = null;
 cdr =inject(ChangeDetectorRef)
   locationWatchId: any;
@@ -31,6 +35,7 @@ cdr =inject(ChangeDetectorRef)
     private tripService:TripService,
     private signalRService: SignalRService,
     private authService: AuthService,
+
     private toast:ToastrService
   ) {
 
@@ -38,6 +43,9 @@ cdr =inject(ChangeDetectorRef)
   }
 
   async ngOnInit(): Promise<void> {
+  this.licenseNumber =this.authService.getLicenseNumber()!
+
+  //console.log(this.licenseNumber)
     await this.loadDashboardData();
   }
 
@@ -74,14 +82,15 @@ CompleteDelivery =false
     this.errorMessage = '';
     try {
       const [stats, trip] = await Promise.all([
-        this.driverService.getDashboardStats().toPromise(),
-        this.driverService.getCurrentTrip().toPromise()
+        this.driverService.getDashboardStats(this.licenseNumber).toPromise(),
+        this.driverService.getCurrentTrip(this.licenseNumber).toPromise()
       ]);
-    //  console.log(stats)
+    //  console.log(stats,"driver stats")
       this.stats = stats!;
     //  console.log(stats)
       this.currentTrip = trip || null;
-     // console.log(trip)
+      this.TripStatus =this.currentTrip?.status || "Loading"
+      console.log(trip,"Current Trip")
       this.cdr.detectChanges()
     } catch (err) {
       console.error(err,"Error");
@@ -95,11 +104,12 @@ CompleteDelivery =false
    try {
       const [trip] = await Promise.all([
 
-        this.driverService.getCurrentTrip().toPromise()
+        this.driverService.getCurrentTrip(this.licenseNumber).toPromise()
       ]);
     //  console.log(stats)
 
       this.currentTrip = trip || null;
+      this.TripStatus =this.currentTrip?.status || "Loading"
       console.log(trip)
       this.cdr.detectChanges()
     } catch (err) {
@@ -143,38 +153,58 @@ get isMaintenanceDue(): boolean {
   private async startLiveTracking(): Promise<void> {
   //  console.log(this.currentTrip,"current trip")
 
-    try {
+
+      try{
       await this.signalRService.start();
       // Subscribe to live GPS updates
       this.gpsSubscription = this.signalRService.vehicleUpdateSubject$.subscribe(update => {
+       if(update){
         this.liveLocation = update;
         this.cdr.detectChanges()
+        this.UpdateCurrentTripStatus(this.currentTrip!.id)
+       }
         // Optionally play sound or show notification
-        console.log('Live location:', update);
+      //  console.log('Live location:', update);
       });
-
-
+    }catch(error){
+       this.toast.error('Could not connect to real‑time updates. Please refresh or try again later.');
+        console.error('SignalR start failed:', error);
+        // Optionally set a flag to hide real‑time features.
+     this.isShiftActive = false;
+     this.cdr.markForCheck()
+         return
+    }
+try{
+//console.log(this.currentTrip)
 // 2. START SENDING THE DRIVER'S LOCATION TO THE SERVER
     if (navigator.geolocation) {
       // Watch the driver's movement
  const companyId = this.authService.getCompanyId() // Or wherever you get companyId
       this.locationWatchId = navigator.geolocation.watchPosition(
-        (position) => {
+        async (position) => {
           const geoData :OfflineGpsPing = {
-            imei :this.currentTrip?.imei!,
+            vehicleId :this.currentTrip?.vehicleId!,
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             speed: position.coords.speed!,
-            timestamp: Date.now(),
+            timestamp: new Date().toISOString(),
             companyId:companyId!
           };
 
-console.log(geoData,"data")
+//console.log(geoData,"data")
           // Call your method here to broadcast to the backend group
 
-          this.signalRService.sendVehicleLocation(geoData);
+          this.signalRService.sendVehicleLocation(geoData).catch(error =>{
+ this.toast.error(error,"Data was not Sent to the Server");
+ this.isShiftActive =false
+ this.cdr.markForCheck()
+})
+
         },
-        (err) => console.error('Error getting location', err),
+        (err) => {
+          console.error('Error getting location', err)
+  this.toast.error(err.message);
+        },
         { enableHighAccuracy: true }
       );
     }
@@ -235,6 +265,30 @@ console.log(geoData,"data")
       this.toast.error(error.error.message || "An Error occurred while trying to end the Trip");
     }
   });
+}
+updateStatus(tripstatus:any){
+  this.tripService.UpdateTripStatus(this.currentTrip?.id!,tripstatus).subscribe(
+  result =>{
+    if(result.message){
+this.TripStatus =tripstatus
+    }
+  },error =>{
+    this.toast.error(error.error)
+  }
+
+)
+}
+UpdateCurrentTripStatus(tripId:string){
+this.tripService.UpdateTripStatus(tripId,"In Transit").subscribe(
+  result =>{
+    if(result.message){
+this.TripStatus ="In Transit"
+    }
+  },error =>{
+    this.toast.error(error.error)
+  }
+
+)
 }
 
   ngOnDestroy(): void {

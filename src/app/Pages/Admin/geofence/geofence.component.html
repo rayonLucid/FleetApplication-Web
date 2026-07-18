@@ -28,7 +28,7 @@
       <div class="card-actions">
         <button (click)="openEditModal(gf)">✏️ Edit</button>
         <button (click)="openAssignModal(gf.id,gf.name)">🔗 Assign Vehicles</button>
-        <button class="delete" (click)="deleteGeofence(gf.id)">🗑️ Delete</button>
+        <!-- <button  class="delete" (click)="deleteGeofence(gf.id)">🗑️ Delete</button> -->
       </div>
     </div>
     <div *ngIf="filteredGeofences.length === 0" class="no-data">No geofences found.</div>

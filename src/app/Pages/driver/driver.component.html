@@ -2,8 +2,14 @@
   <div class="dashboard-header">
     <div>
       <h1>Active Company Fleet Drivers</h1>
-      <p>Manage verified multi-tenant personnel authorizations securely.</p>
+      <p>Manage verified  personnel authorizations securely.</p>
+
+
+
     </div>
+      <button class="btn-add" (click)="openEditModal(null)">
+              Add Driver
+            </button>
   </div>
 
   <div *ngIf="isLoading" class="state-container text-muted">
@@ -67,7 +73,7 @@
     <div class="modal-content" (click)="$event.stopPropagation()">
       <button class="modal-close-btn" (click)="closeEditModal(false)">&times;</button>
 
-      <app-driver-edit *ngIf="selectedDriver" [driverData]="selectedDriver"></app-driver-edit>
+      <app-driver-edit *ngIf="isModalOpen" [driverData]="selectedDriver"></app-driver-edit>
 
       <div class="modal-footer-action">
         <button class="btn-secondary" (click)="closeEditModal(true)">Close & Sync List</button>

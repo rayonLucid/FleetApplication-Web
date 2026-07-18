@@ -52,8 +52,10 @@ cdr =inject(ChangeDetectorRef)
     });
   }
 
-  openEditModal(driver: DriverUpdatePayload): void {
+  openEditModal(driver: DriverUpdatePayload|null): void {
+    if(driver){
     this.selectedDriver = { ...driver }; // Create a shallow clone to protect initial list state values
+    }
     this.isModalOpen = true;
   }
 

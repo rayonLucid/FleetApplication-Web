@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { Trip } from '../../../Data/data-interface';
 import { TripService } from '../../../Services/trip.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -31,7 +32,7 @@ cdr =inject(ChangeDetectorRef)
     deliveriesComplete: null as number | null
   };
 
-  constructor(private tripService: TripService) {}
+  constructor(private tripService: TripService,private toast:ToastrService) {}
 
   ngOnInit(): void {
     this.loadTrips();
@@ -42,11 +43,17 @@ cdr =inject(ChangeDetectorRef)
     this.tripService.getDriverTrips(this.showHistory).subscribe({
       next: (data) => {
         this.trips = data;
+       // console.log(data)
         this.applyFilter();
         this.isLoading = false;
         this.cdr.detectChanges()
       },
-      error: () => (this.isLoading = false)
+      error: (err) => {
+        this.isLoading = false
+        this.toast.error(err.error);
+
+     //   console.log(err.error)
+      }
     });
   }
 

@@ -25,26 +25,35 @@ export class DriverService {
    * Updates an existing driver profile within the tenant scope
    * Maps directly to C# [HttpPut("{id}")]
    */
+   createDriver( payload: DriverUpdatePayload): Observable<any> {
+    // 🌟 Fixed: Changed .post to .put to align with your API definition
+    return this.http.post(`${this.apiUrl}`, payload);
+  }
   updateDriver(id: number, payload: DriverUpdatePayload): Observable<any> {
     // 🌟 Fixed: Changed .post to .put to align with your API definition
     return this.http.put(`${this.apiUrl}/${id}`, payload);
   }
+ getDrivers(): Observable<DriverUpdatePayload[]> {
+  return this.http.get<DriverUpdatePayload[]>(`${this.apiUrl}`);
+}
+ getExpiringLicenses(days: number = 30): Observable<DriverUpdatePayload[]> {
+  return this.http.get<DriverUpdatePayload[]>(`${this.apiUrl}/expiring-licenses?days=${days}`);
+}
 
-  /**
-   * Retrieves all drivers belonging to the authenticated user's company tenant
-   * Pulls from C# [HttpGet("my-fleet")]
-   */
+getExpiredLicenses(): Observable<DriverUpdatePayload[]> {
+  return this.http.get<DriverUpdatePayload[]>(`${this.apiUrl}/expired-licenses`);
+}
   getCompanyFleet(): Observable<DriverUpdatePayload[]> {
-    return this.http.get<DriverUpdatePayload[]>(`${this.apiUrl}/my-fleet`);
+    return this.http.get<DriverUpdatePayload[]>(`${this.apiUrl}`);
   }
 
-  getDashboardStats(): Observable<DriverDashboardStats> {
-  return this.http.get<DriverDashboardStats>(`${this.apiUrl}/stats`);
+  getDashboardStats(licenseNumber:string): Observable<DriverDashboardStats> {
+  return this.http.get<DriverDashboardStats>(`${this.apiUrl}/stats?licenseNumber=${licenseNumber}`);
 }
 ActiveTrips():Observable<RecentTrip[]>{
 return   this.http.get<RecentTrip[]>(`${this.rootApiUrl}admindashboard/recent-trips?limit=5`)
 }
-getCurrentTrip(): Observable<CurrentTripInfo | null> {
-  return this.http.get<CurrentTripInfo | null>(`${this.apiUrl}/currenttrip`);
+getCurrentTrip(licenseNumber:string): Observable<CurrentTripInfo | null> {
+  return this.http.get<CurrentTripInfo | null>(`${this.apiUrl}/currenttrip?licenseNumber=${licenseNumber}`);
 }
 }

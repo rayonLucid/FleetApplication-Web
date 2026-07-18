@@ -98,9 +98,14 @@
   <div class="trip-card" *ngIf="!isLoading && currentTrip">
     <div class="trip-header">
       <span>🚚 Current Trip</span>
-     <span class="trip-status" [ngClass]="tripStatusClass">
+     <span   >
   @if (isShiftActive) {
-    {{ currentTrip.status }}
+    <select [(ngModel)]="TripStatus" (ngModelChange)="updateStatus(TripStatus)">
+      <option value="Loading">Loading</option>
+       <option value="In Transit">In Transit</option>
+        <option value="Delayed">Delayed</option>
+         <option value="Completed">Completed</option>
+    </select>
   } @else {
     Loading
   }

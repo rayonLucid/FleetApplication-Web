@@ -12,6 +12,7 @@ import { VehicleAssignmentsComponent } from './Pages/Admin/vehicle-assignments/v
 import { TripsComponent } from './Pages/trips/trips.component';
 import { DriverTripsComponent } from './Pages/driver-trips/driver-trips.component';
 import { GeofenceComponent } from './Pages/Admin/geofence/geofence.component';
+import { MaintenanceComponent } from './Pages/Admin/maintenance/maintenance';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -29,6 +30,7 @@ export const routes: Routes = [
        { path: 'trips', component: TripsComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
          { path: 'tracking', component: MapComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
          { path: 'geofences', component: GeofenceComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
+          { path: 'maintenance', component: MaintenanceComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
 
       // other protected routes
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' }

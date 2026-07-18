@@ -9,6 +9,8 @@ import { MapSearchResult, Trip } from '../../../Data/data-interface';
 import { TripService } from '../../../Services/trip.service';
 import { MapService } from '../../../Services/map.service';
 import { ConfigService } from '../../config.service';
+import { VehicleService } from '../../../Services/vehicle.service';
+import { DriverService } from '../../../Services/driver.service';
 
 @Component({
   selector: 'app-trips',
@@ -70,12 +72,10 @@ IsUpdating = false;
   mapservice =inject(MapService)
   vehicleUrl :string =''
   driverUrl :string =''
-  vehicleassignmentUrl:string =''
-  constructor(private tripService: TripService, private http: HttpClient,private toast:ToastrService,private urlConfig:ConfigService) {
-  let url =sessionStorage.getItem(this.urlConfig.appUrl)!
-     this.vehicleUrl =`${url}vehicle`
-  this.driverUrl  ==`${url}drivers`
-  this.vehicleassignmentUrl ==`${url}vehicleassignments?history=false`
+ // vehicleassignmentUrl:string =''
+  constructor(private tripService: TripService, private http: HttpClient
+    ,private toast:ToastrService,private driverservice:DriverService,private vehicleService:VehicleService) {
+
   }
 
   ngOnInit(): void {
@@ -84,27 +84,42 @@ IsUpdating = false;
   }
 
   loadLookups(): void {
-    this.http.get<any[]>( this.vehicleUrl).subscribe(data => {
+    this.vehicleService.getVehiclesToAssign().subscribe(
+      data => {
       this.vehicles = data.filter(x =>x.isActive ==true)
 
-    });
-    this.http.get<any[]>( this.driverUrl).subscribe(data =>{
+this.cdr.markForCheck()
+    },error =>{
+      console.log(error)
+      this.toast.error(error.error.message || "An Error Occured while trying to Load Assigned Vehicles ")
+    }
+  );
+    this.driverservice.getDrivers().subscribe(data =>{
        this.drivers = data.filter(x =>x.isActive ==true);
-
+      // console.log(data,"driver data")
+this.cdr.markForCheck()
      });
-     this.http.get<any[]>(this.vehicleassignmentUrl )
-      .subscribe(data => {
+     this.vehicleService.getVehicleAssignments(false)
+      .subscribe(
+        data => {
         this.assignments = data.filter(x =>x.isActive ==true);
 
-      });
+
+      },error =>{
+        console.log(error)
+      }
+    );
   }
 onVehicleChange(vehicleId: any): void {
+
     // Find the assignment for this vehicle (only one active assignment per vehicle)
     const assignment = this.assignments.find(a => a.vehicleId === vehicleId.target.value);
-
+  console.log(assignment,"assignment")
     if (assignment) {
       // Pre-select the assigned driver and disable the driver dropdown
       this.newTrip.driverId = assignment.driverId;
+      this.cdr.markForCheck()
+    //  this.drivers =
       // Optional: show a message or disable the dropdown
     } else {
       this.newTrip.driverId = '';

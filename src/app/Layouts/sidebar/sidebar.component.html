@@ -8,6 +8,7 @@
   </div>
 
   <ul class="nav-menu">
+   
     <li *ngFor="let item of menuItems" [class.active]="router.url === item.route">
       <a *ngIf="isVisible(item)" [routerLink]="item.route" routerLinkActive="active">
         <span class="icon">{{ item.icon }}</span>

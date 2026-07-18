@@ -2,7 +2,7 @@
   <div class="login-box">
     <div class="login-header">
       <h2>Fleet Management System</h2>
-      <p>Sign in to access your multi-tenant tenant dashboard</p>
+      <p>Sign in to access your  dashboard</p>
     </div>
 
     <div *ngIf="errorMessage" class="login-alert">
@@ -34,7 +34,7 @@
       <div class="form-actions">
         <button type="submit" [disabled]="loginForm.invalid || isSubmitting" class="btn-login">
           <span *ngIf="isSubmitting" class="btn-spinner"></span>
-          <span>{{ isSubmitting ? 'Authenticating Credentials...' : 'Sign In To Account' }}</span>
+          <span>{{ isSubmitting ==true ? 'Authenticating Credentials...' : 'Sign In To Account' }}</span>
         </button>
       </div>
     </form>

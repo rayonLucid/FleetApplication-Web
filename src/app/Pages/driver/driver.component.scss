@@ -9,6 +9,8 @@ $primary-blue: #2563eb;
   margin: 0 auto;
 
   .dashboard-header {
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 2rem;
     h1 {
       font-size: 1.75rem;
@@ -187,7 +189,15 @@ $primary-blue: #2563eb;
     }
   }
 }
-
+.btn-add {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background: #2563eb; }
+}
 .spinner-blue {
   width: 2rem; height: 2rem;
   border: 3px solid #e5e7eb; border-top-color: $primary-blue;
