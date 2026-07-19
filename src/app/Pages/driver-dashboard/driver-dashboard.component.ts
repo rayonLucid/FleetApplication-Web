@@ -90,7 +90,7 @@ CompleteDelivery =false
     //  console.log(stats)
       this.currentTrip = trip || null;
       this.TripStatus =this.currentTrip?.status || "Loading"
-      console.log(trip,"Current Trip")
+     // console.log(trip,"Current Trip")
       this.cdr.detectChanges()
     } catch (err) {
       console.error(err,"Error");
@@ -203,7 +203,7 @@ try{
         },
         (err) => {
           console.error('Error getting location', err)
-  this.toast.error(err.message);
+  this.toast.error('Error getting location',err.message);
         },
         { enableHighAccuracy: true }
       );

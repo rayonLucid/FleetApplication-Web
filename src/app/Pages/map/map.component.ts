@@ -92,8 +92,9 @@ constructor() {
     // This effect runs automatically whenever the tracker.lastKnownLocation() changes
     effect(() => {
       this.signalRService.onGpsUpdateReceived((data:GpsUpdate) => {
-    console.log(data)
+
     this.driverData =data
+    this.cdRef.markForCheck()
 
 if (this.geofenceCircle) this.map.removeLayer(this.geofenceCircle);
   if (this.destinationCircle) this.map.removeLayer(this.destinationCircle);
@@ -150,7 +151,7 @@ if (this.geofenceCircle) this.map.removeLayer(this.geofenceCircle);
    this.signalRService.onGpsUpdateReceived((data:GpsUpdate) => {
     console.log(data)
     this.driverData =data
-
+console.log(data)
 if (this.geofenceCircle) this.map.removeLayer(this.geofenceCircle);
   if (this.destinationCircle) this.map.removeLayer(this.destinationCircle);
   if (this.carMarker) { this.map.removeLayer(this.carMarker); this.carMarker = null; }
@@ -639,8 +640,8 @@ startRealTracking1() {
 selectVehicle(selectedTrip: RecentTrip): void {
   // 1. Save this trip so the SignalR listener knows which vehicle to filter for
   this.selectedTrip = selectedTrip;
-//console.log(selectedTrip)
-  if (this.selectedTrip && this.selectedTrip.imei === this.driverData?.vehicleId) {
+   console.log(selectedTrip)
+  if (this.selectedTrip && this.selectedTrip.vehicleId === this.driverData?.vehicleId) {
     // Clear existing map layers
     if (this.geofenceLayerGroup) {
       this.map.removeLayer(this.geofenceLayerGroup);
@@ -661,27 +662,27 @@ if (this.destinationMarker) {
   this.map.removeLayer(this.destinationMarker);
 }
 
-    const startLatLng = L.latLng(this.driverData?.latitude, this.driverData?.longitude);
+    const startLatLng = L.latLng(this.driverData?.latitude!, this.driverData?.longitude!);
  // Now add the driver's start marker and route line
         if (!this.carMarker) {
           this.carMarker = L.marker(startLatLng, { icon: this.icon })
-          .bindTooltip(`<b>Vehichle:</b><br>${this.driverData?.vehicleId}`)
+          .bindTooltip(`<b>Vehichle:</b><br>${this.selectedTrip?.driverName}`)
           .addTo(this.map);
           this.routeLine = L.polyline([startLatLng], { color: '#3498db' }).addTo(this.map);
         }
-
+console.log(selectedTrip,"selected Trip")
     // -------- Fetch geofences for this vehicle --------
     this.geofenceService.getGeofencesByVehicle(selectedTrip.vehicleId).subscribe({
       next: (geofences) => {
-       // console.log(geofences)
+        // console.log(geofences)
         // Create a layer group for all geofence circles
         this.geofenceLayerGroup = L.layerGroup().addTo(this.map);
- if (geofences && geofences.length > 0) {
+            if (geofences && geofences.length > 0) {
 
-
+let count =1
           geofences.forEach(gf => {
             const center = L.latLng(gf.centerLatitude, gf.centerLongitude);
-
+//console.log(center)
             const circle = L.circle(center, {
               radius: gf.radiusMeters,
               color: '#31dc79',
@@ -694,7 +695,7 @@ if (this.destinationMarker) {
  //console.log(geofences)
 
              this.geoFenceMarker = L.marker(center,{ icon: this.mapservice.DeliveryIcon })
-  .bindTooltip(`<b>Destination:</b><br>${gf.name}`)
+  .bindTooltip(`<b>Destination ${count++}:</b><br>${gf.name}`)
   .addTo(this.map);
 
   // Add the marker to the dedicated LayerGroup instead of a single variable
@@ -737,7 +738,7 @@ this.destinationMarker = L.marker(destLatLng,{ icon: this.mapservice.DestIcon })
       },
       error: (err) => {
         console.error('Failed to load geofences:', err);
-        this.toast.error('Could not load geofences for this vehicle.');
+        this.toast.error(err,'Could not load geofences for this vehicle.');
       }
     });
   } else {

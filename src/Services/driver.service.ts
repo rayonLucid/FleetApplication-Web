@@ -51,7 +51,7 @@ getExpiredLicenses(): Observable<DriverUpdatePayload[]> {
   return this.http.get<DriverDashboardStats>(`${this.apiUrl}/stats?licenseNumber=${licenseNumber}`);
 }
 ActiveTrips():Observable<RecentTrip[]>{
-return   this.http.get<RecentTrip[]>(`${this.rootApiUrl}admindashboard/recent-trips?limit=5`)
+return   this.http.get<RecentTrip[]>(`${this.rootApiUrl}api/admindashboard/recent-trips?limit=5`)
 }
 getCurrentTrip(licenseNumber:string): Observable<CurrentTripInfo | null> {
   return this.http.get<CurrentTripInfo | null>(`${this.apiUrl}/currenttrip?licenseNumber=${licenseNumber}`);

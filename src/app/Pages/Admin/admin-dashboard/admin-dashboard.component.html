@@ -103,14 +103,18 @@
         <tr><th>Vehicle</th><th>Driver</th><th>Start Time</th><th>End Time</th><th>Distance (km)</th><th>Status</th></tr>
       </thead>
       <tbody>
-        <tr *ngFor="let trip of recentTrips">
-          <td>{{ trip.vehiclePlate }}</td>
-          <td>{{ trip.driverName }}</td>
-          <td>{{ trip.startTime | date:'short' }}</td>
-          <td>{{ trip.endTime ? (trip.endTime | date:'short') : '—' }}</td>
-          <td>{{ trip.distanceKm || 0 | number:'1.0-0' }}</td>
-          <td><span class="status-badge" [ngClass]="trip.status.toLowerCase().replace(' ', '-')">{{ trip.status }}</span></td>
-        </tr>
+       <tr *ngFor="let trip of recentTrips">
+  <td data-label="Vehicle">{{ trip.vehiclePlate }}</td>
+  <td data-label="Driver">{{ trip.driverName }}</td>
+  <td data-label="Start Time">{{ trip.startTime | date:'short' }}</td>
+  <td data-label="End Time">{{ trip.endTime ? (trip.endTime | date:'short') : '—' }}</td>
+  <td data-label="Distance (km)">{{ trip.distanceKm || 0 | number:'1.0-0' }}</td>
+  <td data-label="Status">
+    <span class="status-badge" [ngClass]="trip.status.toLowerCase().replace(' ', '-')">
+      {{ trip.status }}
+    </span>
+  </td>
+</tr>
         <tr *ngIf="recentTrips.length === 0"><td colspan="6">No recent trips found.</td></tr>
       </tbody>
     </table>

@@ -58,7 +58,7 @@
 
 <div class="info-panel">
   <h3>Live Vehicles</h3>
- <ul class="live-vehicles-list">
+ <ul class="live-vehicles-list" *ngIf="driverData">
   <li *ngFor="let entry of currentTrip" >
     <a (click)="selectVehicle(entry)" [class.active]="selectedTrip === entry">
       <strong>{{ entry.driverName }}</strong>

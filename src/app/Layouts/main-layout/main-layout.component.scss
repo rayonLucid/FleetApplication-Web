@@ -1,15 +1,56 @@
-.layout-container {
-  display: flex;
+:host {
+  display: block;
   min-height: 100vh;
 }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
 .main-content {
   flex: 1;
-  margin-left: 260px;          /* match sidebar width */
-  transition: margin-left 0.3s ease;
-  padding: 24px;
+  margin-left: 0;
+  padding: 16px;
   background: #f8fafc;
+  width: 100%;
+  min-width: 0;
+  transition: margin-left 0.3s ease, padding 0.3s ease;
 }
-/* When sidebar is collapsed (you'll need to share state) – optional */
-:host-context(.sidebar-collapsed) .main-content {
-  margin-left: 70px;
+
+@media (min-width: 768px) {
+  .layout-container {
+    flex-direction: row;
+  }
+
+  .main-content {
+    margin-left: 260px;
+    padding: 32px;
+  }
+
+  :host-context(.sidebar-collapsed) .main-content {
+    margin-left: 70px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    padding: 32px 40px;
+  }
+}
+
+@media (max-width: 767px) {
+  :host-context(.mobile-sidebar-open) .main-content {
+    pointer-events: none;
+    opacity: 0.6;
+    user-select: none;
+  }
 }

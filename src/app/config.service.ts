@@ -58,7 +58,7 @@ export class ConfigService {
   sessionStorage.setItem(this.appUrl, this.Config.apiUrl!);
   sessionStorage.setItem(this.approotUrl, this.Config.rootUrl!);
 
-  console.log('Config Service - App URL Configured:', this.Config.apiUrl!);
+  //console.log('Config Service - App URL Configured:', this.Config.apiUrl!);
 
 } catch (err) {
   console.error('Failed to load configuration after 100 attempts:', err);

@@ -239,3 +239,238 @@
   padding: 48px;
   color: #6b7280;
 }
+
+
+.vehicles-container {
+  padding: 16px; // 🌟 Reduced padding on mobile
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  @media (min-width: 768px) {
+    padding: 24px; // Restore desktop padding
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column; // 🌟 Stack header content on mobile
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+
+  h2 { margin: 0; }
+
+  @media (min-width: 576px) {
+    flex-direction: row; // 🌟 Side-by-side on tablet/desktop
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.btn-add {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px; // 🌟 Larger touch target on mobile
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%; // 🌟 Full width button on small mobile screens
+  text-align: center;
+  font-weight: 500;
+  &:hover { background: #2563eb; }
+
+  @media (min-width: 576px) {
+    width: auto; // Regular width on desktop
+    padding: 8px 16px;
+  }
+}
+
+.search-bar {
+  margin-bottom: 24px;
+  .search-input {
+    width: 100%;
+    max-width: 100%; // 🌟 Fills viewport space on mobile
+    padding: 12px 16px; // 🌟 Enhanced touch target height
+    border: 1px solid #d1d5db;
+    border-radius: 40px;
+    font-size: 16px; // 🌟 Prevents automatic iOS safari zooming on focus
+    outline: none;
+    &:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+    }
+
+    @media (min-width: 576px) {
+      max-width: 400px;
+      font-size: 14px;
+    }
+  }
+}
+
+/* ---- DATATABLE LAYOUT ---- */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; // Smooth scrolling physics on iOS
+  margin: 0 -16px; // 🌟 Full-bleed edge scrolling on mobile viewports
+  padding: 0 16px;
+
+  @media (min-width: 768px) {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.vehicles-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap; // 🌟 Keeps text data clean without irregular breaking mid-row
+
+  th, td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  th { background: #f9fafb; font-weight: 600; }
+
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: #e5e7eb;
+    color: #374151;
+    display: inline-block;
+    &.active { background: #d1fae5; color: #065f46; }
+  }
+
+  .actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px; // 🌟 Slightly larger tap targets for mobile layout options
+    padding: 6px; // Prevents accidental misclicks
+    margin-right: 4px;
+    &.edit-btn { color: #3b82f6; }
+    &.delete-btn { color: #ef4444; }
+  }
+}
+
+/* ---- TELEMETRY CARDS GRID ---- */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr; // 🌟 1 Column by default on standard mobile devices
+  gap: 16px;
+  margin-bottom: 32px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); // 🌟 Grid auto-scaling on tablet+
+    gap: 20px;
+  }
+}
+
+/* ---- RESPONSIVE MODAL & FORMS ---- */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end; // 🌟 Slides up like a bottom-sheet on small mobile viewports
+  justify-content: center;
+  z-index: 1000;
+  padding: 0;
+
+  @media (min-width: 576px) {
+    align-items: center; // Centered overlay dialog on tablets and desktops
+    padding: 16px;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px 16px 0 0; // 🌟 Bottom sheet rounded edges for mobile layout profile
+  width: 100%;
+  max-width: 100%;
+  max-height: 85vh; // Safe space boundaries for standard mobile headers/keyboards
+  overflow-y: auto;
+
+  @media (min-width: 576px) {
+    border-radius: 16px; // Complete box layout frame
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+  }
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column; // 🌟 Stack columns vertically by default on mobile screens
+  gap: 16px;
+  margin-bottom: 16px;
+
+  @media (min-width: 576px) {
+    flex-direction: row; // 🌟 Row split aligns beautifully on screen sizes above mobile breakpoint
+    gap: 24px;
+  }
+}
+
+.form-group {
+  flex: 1;
+  width: 100%;
+
+  label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 14px; }
+  input {
+    width: 100%;
+    padding: 10px 12px; // 🌟 Increased input element padding depth
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 16px; // 🌟 Prevents auto-zoom behavior inside mobile Safari views
+    box-sizing: border-box;
+
+    @media (min-width: 576px) {
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
+  .error { color: #ef4444; font-size: 12px; margin-top: 4px; }
+
+  &.checkbox {
+    display: flex;
+    align-items: center;
+    input { width: auto; margin-right: 8px; }
+    label { margin-bottom: 0; }
+  }
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex; // 🌟 Flex button layout distribution
+  gap: 12px;
+  justify-content: flex-end;
+
+  button {
+    flex: 1; // 🌟 Buttons grow to take equal layout proportions on small phones
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+    margin-left: 0; // Reset original absolute margin vectors
+  }
+
+  .btn-cancel { background: #e5e7eb; color: #374151; }
+  .btn-save { background: #3b82f6; color: white; }
+
+  @media (min-width: 576px) {
+    display: block; // Revert layout structure to standard block alignments
+    button {
+      flex: none;
+      width: auto;
+      padding: 8px 16px;
+      font-size: 14px;
+      margin-left: 8px;
+    }
+  }
+}
