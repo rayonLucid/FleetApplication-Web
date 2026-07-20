@@ -62,7 +62,7 @@ export interface DriverOnboardingPayload {
 }
 
 export interface DecodedToken {
-  userid: string;      // Standard User ID claim mapping
+  userId: string;      // Standard User ID claim mapping
   email: string;       // Standard Email claim mapping
   companyId: string;   // 🌟 Your custom multi-tenant corporate GUID claim
   role: string;         // Token expiration timestamp (in seconds)
@@ -70,6 +70,8 @@ export interface DecodedToken {
   aud?: string;
   exp: number;
   licenseNumber:string
+  firstName:string;
+  lastName:string;
 }
 export interface LoginCredentials { email: string; password: string; }
 export interface AuthResponse { token: string; }
@@ -85,7 +87,7 @@ export interface CurrentTripInfo {
   id:string
   imei:string
   vehicleId:string
-  
+
 }
 
 export interface DriverDashboardStats {

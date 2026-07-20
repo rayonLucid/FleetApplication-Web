@@ -1,6 +1,8 @@
 <div class="layout-container">
-  <app-sidebar></app-sidebar>
-  <main class="main-content">
+  <app-sidebar [class.collapsed]="isSidebarCollapsed"  [class.mobile-open]="isMobileOpen"></app-sidebar>
+ <div class="mobile-overlay" *ngIf="isMobileOpen" (click)="closeMobile()"></div>
+  <main class="main-content" [class.sidebar-collapsed]="isSidebarCollapsed" [class.mobile-open]="isMobileOpen">
+    <app-header (toggleMobile)="toggleMobile()" ></app-header>
     <router-outlet></router-outlet>
   </main>
 </div>

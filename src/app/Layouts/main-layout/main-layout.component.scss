@@ -9,6 +9,7 @@
   box-sizing: border-box;
 }
 
+
 .layout-container {
   display: flex;
   flex-direction: column;
@@ -24,6 +25,16 @@
   width: 100%;
   min-width: 0;
   transition: margin-left 0.3s ease, padding 0.3s ease;
+   &.sidebar-collapsed {
+    margin-left: 70px;
+  }
+
+    @media (max-width: 768px) {
+    margin-left: 0 !important;
+    &.mobile-open {
+      margin-left: 0;
+    }
+  }
 }
 
 @media (min-width: 768px) {

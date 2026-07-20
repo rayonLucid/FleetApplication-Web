@@ -24,9 +24,7 @@ get baseUrl():string {
 }
   constructor(private offlineDb: OfflineDbService) {
 
-    // Use your actual backend URL (adjust port if needed)
-  //  const baseUrl =this.authService.get; // or your production URL
-//console.log(`${this.baseUrl}trackingHub`)
+   
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${this.baseUrl}trackingHub`,
         {

@@ -1,0 +1,20 @@
+<header class="header">
+  <div class="header-left">
+    <button class="menu-toggle" (click)="toggleSidebar()">
+      ☰
+    </button>
+    <button class="hamburger" (click)="toggleMobile.emit()">☰</button>
+    <span class="page-title">{{ getPageTitle()}}</span>
+  </div>
+  <div class="header-right">
+    <span class="user-info">
+      <span class="user-name">{{ userFullName }}</span>
+      <span class="user-role" *ngIf="userRole">({{ userRole }})</span>
+        <span class="date">{{ today | date:'fullDate' }}</span>
+    </span>
+    <button class="logout-btn" (click)="logout()">
+      <span class="icon">🚪</span>
+      Logout
+    </button>
+  </div>
+</header>

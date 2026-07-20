@@ -186,7 +186,7 @@ try{
             vehicleId :this.currentTrip?.vehicleId!,
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            speed: position.coords.speed!,
+            speed: position.coords.speed ?? 0,
             timestamp: new Date().toISOString(),
             companyId:companyId!
           };

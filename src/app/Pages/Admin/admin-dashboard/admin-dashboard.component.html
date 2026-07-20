@@ -1,8 +1,8 @@
 <div class="admin-dashboard">
-  <div class="header">
+  <!-- <div class="header">
     <h1>Admin Dashboard</h1>
     <div class="date">{{ today | date:'fullDate' }}</div>
-  </div>
+  </div> -->
 
   <div *ngIf="isLoading" class="loading">Loading fleet data...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
