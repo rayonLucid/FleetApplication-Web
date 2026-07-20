@@ -27,6 +27,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   licenseNumber:string =''
   driverName=''
   TripStatus :string="Loading"
+  private locationIntervalId: any;
   private gpsSubscription: Subscription | null = null;
 cdr =inject(ChangeDetectorRef)
   locationWatchId: any;
@@ -194,11 +195,7 @@ try{
 //console.log(geoData,"data")
           // Call your method here to broadcast to the backend group
 
-          this.signalRService.sendVehicleLocation(geoData).catch(error =>{
- this.toast.error(error,"Data was not Sent to the Server");
- this.isShiftActive =false
- this.cdr.markForCheck()
-})
+        this. startVehicleLocationPolling(geoData)
 
         },
         (err) => {
@@ -226,7 +223,21 @@ try{
       this.errorMessage = 'Could not start live tracking.';
     }
   }
+startVehicleLocationPolling(vehicleData: any) {
+   this.signalRService.sendVehicleLocation(vehicleData).catch(error =>{
+ this.toast.error(error,"Data was not Sent to the Server");
+ this.isShiftActive =false
+ this.cdr.markForCheck()
+}) 
 
+  this.locationIntervalId = setInterval(() => {
+    this.signalRService.sendVehicleLocation(vehicleData).catch(error =>{
+ this.toast.error(error,"Data was not Sent to the Server");
+ this.isShiftActive =false
+ this.cdr.markForCheck()
+}) 
+  }, 5 * 60 * 1000);
+}
   private async stopLiveTracking(): Promise<void> {
   // Check if there are outstanding deliveries
   if (this.currentTrip?.totalDeliveries !== this.currentTrip?.deliveriesComplete) {
@@ -271,6 +282,10 @@ updateStatus(tripstatus:any){
   result =>{
     if(result.message){
 this.TripStatus =tripstatus
+if(tripstatus =="Delayed"){
+  this.signalRService.stop()
+  this.isShiftActive =false
+}
     }
   },error =>{
     this.toast.error(error.error)

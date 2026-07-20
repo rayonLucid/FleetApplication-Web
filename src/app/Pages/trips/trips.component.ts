@@ -252,7 +252,7 @@ openEditModal(trip: Trip): void {
 GetEditEndLocationInfo(searchQuery:string){
 this.IsUpdating =true
     this.mapservice.performSearch(searchQuery).then((data:MapSearchResult) =>{
-      console.log(data)
+    //  console.log(data)
         if(data.message !="Success"){
            this.toast.warning(data.message)
           return
