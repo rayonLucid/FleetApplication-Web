@@ -1,26 +1,26 @@
-<div class="sidebar" [class.collapsed]="isCollapsed">
+<div   [class.mobile-open]="isMobileOpen" >
   <div class="sidebar-header">
     <div class="logo" *ngIf="!isCollapsed">Fleet</div>
     <div class="logo-icon" *ngIf="isCollapsed">F</div>
-    <button class="toggle-btn" (click)="toggleSidebar()">
+    <button class="toggle-btn" (click)="toggleMobile.emit()">
       {{ isCollapsed ? '→' : '←' }}
     </button>
   </div>
 
-  <ul class="nav-menu">
+  <ul class="nav-menu" *ngIf="!isCollapsed">
    
     <li *ngFor="let item of menuItems" [class.active]="router.url === item.route">
       <a *ngIf="isVisible(item)" [routerLink]="item.route" routerLinkActive="active">
         <span class="icon">{{ item.icon }}</span>
-        <span class="label" *ngIf="!isCollapsed">{{ item.label }}</span>
+        <span class="label" >{{ item.label }}</span>
       </a>
     </li>
   </ul>
 
-  <div class="sidebar-footer">
+  <div class="sidebar-footer" *ngIf="!isCollapsed">
     <button class="logout-btn" (click)="logout()">
       <span class="icon">🚪</span>
-      <span class="label" *ngIf="!isCollapsed">Logout</span>
+      <span class="label" >Logout</span>
     </button>
   </div>
 </div>

@@ -70,8 +70,8 @@ export interface DecodedToken {
   aud?: string;
   exp: number;
   licenseNumber:string
-  firstName:string;
-  lastName:string;
+  fullName:string;
+ 
 }
 export interface LoginCredentials { email: string; password: string; }
 export interface AuthResponse { token: string; }
@@ -190,6 +190,10 @@ export interface Trip {
   deliveriesComplete?: number;
   routeId?: number;
   createdAt: string;
+  geofenceLat:number ;
+  geofenceLng:number ;
+  destinationLat:number ;
+  destinationLng:number
 }
 
 export interface OfflineGpsPing extends GpsUpdate {

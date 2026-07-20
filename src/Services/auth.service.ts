@@ -81,7 +81,7 @@ export class AuthService {
      const decoded = this.jwtHelper.decodeToken(token);
 
    // console.log(decoded)
-    return decoded ? decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] : '';
+    return decoded ? decoded['fullName'] : '';
   }
  public getLicenseNumber(): string | null {
     const token = this.getToken()!;

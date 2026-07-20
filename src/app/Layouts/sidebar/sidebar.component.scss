@@ -20,13 +20,13 @@
   -webkit-overflow-scrolling: touch;
  @media (max-width: 768px) {
     transform: translateX(-100%);
-    width: 280px; // slightly wider for touch targets
+   // width: 280px; // slightly wider for touch targets
     &.mobile-open {
-      transform: translateX(0);
+      transform: translateX(0%);
     }
   }
   &.collapsed {
-    width: 70px;
+    width: 0px;
 
     .sidebar-header .logo,
     .nav-menu .label,
@@ -43,6 +43,9 @@
       margin-right: 0;
     }
   }
+  :host(.collapsed) {
+  width: 0px;
+}
 .mobile-overlay {
   display: none;
   @media (max-width: 768px) {
@@ -185,7 +188,7 @@
     width: 240px;
 
     &.collapsed {
-      width: 70px;
+      width: 0px;
     }
 
     .sidebar-header {
@@ -210,7 +213,7 @@
     }
 
     &.collapsed {
-      width: 280px;
+      width: 0px;
     }
 
     .sidebar-header {

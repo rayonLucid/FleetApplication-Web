@@ -60,8 +60,8 @@
         <option value="">Select Driver</option>
         <option *ngFor="let d of drivers" [value]="d.id">{{ d.fullName }}</option>
       </select>
-      <input type="text" placeholder="Start Location" [(ngModel)]="newTrip.startLocation" class="full-width" />
-       <input type="text" placeholder="End Location" [(ngModel)]="newTrip.endLocation" (change)="GetEndLocationInfo(newTrip.endLocation)" class="full-width" />
+      <input type="text" placeholder="Start Location" [(ngModel)]="newTrip.startLocation" (ngModelChange)="GetStartLocationInfo(newTrip.startLocation)" class="full-width" />
+       <input type="text" placeholder="End Location" [(ngModel)]="newTrip.endLocation" (ngModelChange)="GetEndLocationInfo(newTrip.endLocation)" class="full-width" />
       <label>Total Deliveries </label>
       <input type="number" placeholder="Total Deliveries (optional)" [(ngModel)]="newTrip.totalDeliveries" class="full-width" />
  <label>Status </label>
@@ -80,7 +80,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" (click)="showStartModal=false">Cancel</button>
-      <button class="btn-save" (click)="startTrip()">
+      <button class="btn-save" (click)="startTrip()" >
           @if(IsCreating==true){
           <i class="fa fa-spinner fa-spin"></i>  Creating..
         }@else{
@@ -126,8 +126,8 @@
           <option value="">Select Driver</option>
           <option *ngFor="let d of drivers" [value]="d.id">{{ d.fullName }}</option>
         </select>
-        <input type="text" placeholder="Start Location" [(ngModel)]="editTripData.startLocation" class="full-width" />
-        <input type="text" placeholder="End Location" [(ngModel)]="editTripData.endLocation" class="full-width" (change)="GetEditEndLocationInfo(editTripData.endLocation)" />
+        <input type="text" placeholder="Start Location" [(ngModel)]="editTripData.startLocation" class="full-width" (ngModelChange)="GetEditStartLocationInfo(editTripData.startLocation!)" />
+        <input type="text" placeholder="End Location" [(ngModel)]="editTripData.endLocation" class="full-width" (change)="GetEditEndLocationInfo(editTripData.endLocation!)" />
         <label>Total Deliveries</label>
         <input type="number" placeholder="Total Deliveries (optional)" [(ngModel)]="editTripData.totalDeliveries" class="full-width" />
         <label>Status</label>

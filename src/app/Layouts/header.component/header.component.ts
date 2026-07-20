@@ -14,11 +14,12 @@ import { SidebarStateService } from '../../../Services/sidebar-state';
 })
 export class HeaderComponent {
    userFullName: string = '';
+   pageIcon:any
    pageTitle=""
    today = Date()
   userRole: string = '';
   cdref =inject(ChangeDetectorRef)
-@Output() toggleMobile = new EventEmitter<void>();
+@Output() toggleMobile = new EventEmitter<boolean>();
   constructor(private authService: AuthService, private router: Router,
     private activatedRoute: ActivatedRoute,private sidebarState: SidebarStateService) {
 
@@ -32,6 +33,7 @@ export class HeaderComponent {
       current = current.firstChild;
     }
     this.pageTitle = current.data['title'] || 'Dashboard';
+    this.pageIcon =current.data['icon'] || ''
   });
     }
 
@@ -39,13 +41,16 @@ export class HeaderComponent {
     const token = this.authService.getDecodedToken();
 
     if (token) {
-      this.userFullName = token.userId  || 'User';
+      this.userFullName = token.fullName  || 'User';
       this.userRole =  this.authService.getRole() || '';
     }
 
   }
  getPageTitle(): string {
     return this.pageTitle;
+  }
+   getPageIcon(): string {
+    return this.pageIcon;
   }
 toggleSidebar(): void {
   this.sidebarState.toggle();

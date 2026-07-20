@@ -682,7 +682,7 @@ console.log(selectedTrip,"selected Trip")
 let count =1
           geofences.forEach(gf => {
             const center = L.latLng(gf.centerLatitude, gf.centerLongitude);
-//console.log(center)
+console.log(center)
             const circle = L.circle(center, {
               radius: gf.radiusMeters,
               color: '#31dc79',
@@ -722,7 +722,7 @@ let count =1
 
           // 2. Add the pointer (marker) right in the center
 this.destinationMarker = L.marker(destLatLng,{ icon: this.mapservice.DestIcon })
-  .bindTooltip(`<b>Destination:</b><br>${selectedTrip.endLocation}`)
+  .bindTooltip(`<b>Final Destination:</b><br>${selectedTrip.endLocation}`)
   .addTo(this.map);
 
           // Fit bounds to show both start and destination

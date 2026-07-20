@@ -6,8 +6,8 @@
 }
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end !important;
+  align-items:end;
   margin-bottom: 24px;
   h2 { margin: 0; }
 }
@@ -257,6 +257,7 @@
   flex-direction: column; // 🌟 Stack header content on mobile
   gap: 16px;
   align-items: flex-start;
+
   margin-bottom: 24px;
 
   h2 { margin: 0; }

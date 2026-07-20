@@ -56,17 +56,10 @@ export class TripsComponent implements OnInit {
 
 // Add these properties
 showEditModal = false;
-editTripData: any = {
-  vehicleId: '',
-  driverId: '',
-  startLocation: '',
-  endLocation: '',
-  status: '',
-  totalDeliveries: 0
-};
+editTripData: Partial<Trip> ={};
 selectedEditTripId: string | null = null;
 IsUpdating = false;
-
+IsReady=false
 
   cdr = inject(ChangeDetectorRef)
   mapservice =inject(MapService)
@@ -171,11 +164,22 @@ onVehicleChange(vehicleId: any): void {
 GetEndLocationInfo(searchQuery:string){
 
     this.mapservice.performSearch(searchQuery).then((data:MapSearchResult) =>{
-      console.log(data)
+    //  console.log(data)
        let SeachResult :MapSearchResult =data
        this.newTrip.endLocation =SeachResult.display_name
         this.newTrip.destinationLat =SeachResult.lat
          this.newTrip.destinationLng =SeachResult.lon
+
+    })
+}
+GetStartLocationInfo(searchQuery:string){
+
+    this.mapservice.performSearch(searchQuery).then((data:MapSearchResult) =>{
+   //   console.log(data)
+       let SeachResult :MapSearchResult =data
+       this.newTrip.startLocation =SeachResult.display_name
+        this.newTrip.geofenceLat =SeachResult.lat
+         this.newTrip.geofenceLng =SeachResult.lon
 
     })
 }
@@ -228,7 +232,7 @@ this.cdr.detectChanges()
 
 
   // Method to open edit modal
-openEditModal(trip: any): void {
+openEditModal(trip: Trip): void {
   this.selectedEditTripId = trip.id;
   this.editTripData = {
     vehicleId: trip.vehicleId,
@@ -237,13 +241,16 @@ openEditModal(trip: any): void {
     endLocation: trip.endLocation || '',
     status: trip.status || 'In Transit',
     totalDeliveries: trip.totalDeliveries || 0,
-    destinationLat:0,
-    destinationLng:0
+    destinationLat:trip.destinationLat,
+    destinationLng:trip.destinationLat,
+   geofenceLat:trip.geofenceLat ,
+  geofenceLng:trip.geofenceLng
+    
   };
   this.showEditModal = true;
 }
 GetEditEndLocationInfo(searchQuery:string){
-
+this.IsUpdating =true
     this.mapservice.performSearch(searchQuery).then((data:MapSearchResult) =>{
       console.log(data)
         if(data.message !="Success"){
@@ -254,8 +261,25 @@ GetEditEndLocationInfo(searchQuery:string){
        this.editTripData.endLocation =SeachResult.display_name
         this.editTripData.destinationLat =SeachResult.lat
          this.editTripData.destinationLng =SeachResult.lon
+this.IsUpdating =false
+this.cdr.markForCheck()
 
-
+    })
+}
+GetEditStartLocationInfo(searchQuery:string){
+this.IsUpdating =true
+    this.mapservice.performSearch(searchQuery).then((data:MapSearchResult) =>{
+      console.log(data)
+        if(data.message !="Success"){
+           this.toast.warning(data.message)
+          return
+        }
+       let SeachResult :MapSearchResult =data
+       this.editTripData.startLocation =SeachResult.display_name
+        this.editTripData.geofenceLat =SeachResult.lat
+         this.editTripData.geofenceLng =SeachResult.lon
+this.IsUpdating =false
+this.cdr.markForCheck()
     })
 }
 // Method to update trip

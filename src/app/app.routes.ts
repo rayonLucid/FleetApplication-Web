@@ -21,12 +21,12 @@ export const routes: Routes = [
     component: MainLayoutComponent,   // layout with sidebar
     canActivate: [AuthGuard],
     children: [
-      { path: 'dashboard', component: AdminDashboardComponent, data: { role: 'Admin',title: 'Admin Dashboard' } },
-      { path: 'driver-dashboard', component: DriverDashboardComponent, data: { role: 'Driver',title: 'Driver Dashboard' } },
-      { path: 'drivers', component: DriverComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Drivers' } },
+      { path: 'dashboard', component: AdminDashboardComponent, data: { role: 'Admin',title: 'Admin Dashboard' ,icon:'📊'} },
+      { path: 'driver-dashboard', component: DriverDashboardComponent, data: { role: 'Driver',title: 'Driver Dashboard',icon:'📊' } },
+      { path: 'drivers', component: DriverComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Drivers',icon:'👨‍✈️' } },
       { path: 'my-trips', component: DriverTripsComponent, canActivate: [AuthGuard], data: { role: 'Driver',title: 'My Trips' } },
-      { path: 'vehicles', component: VehiclesComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Vehicles' } },
-      { path: 'vehicle-assignments', component: VehicleAssignmentsComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Vehicle Assignments' } },
+      { path: 'vehicles', component: VehiclesComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Vehicles',icon:'🚛' } },
+      { path: 'vehicle-assignments', component: VehicleAssignmentsComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Vehicle Assignments' ,icon:'🔗'} },
        { path: 'trips', component: TripsComponent, canActivate: [AuthGuard], data: { role: 'Admin' ,title: 'Trips'} },
          { path: 'tracking', component: MapComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Tracking' } },
          { path: 'geofences', component: GeofenceComponent, canActivate: [AuthGuard], data: { role: 'Admin',title: 'Geofences' } },

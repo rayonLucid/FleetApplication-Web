@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../Services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -21,8 +21,10 @@ interface MenuItem {
 export class SidebarComponent implements OnInit {
   menuItems: MenuItem[] = [];
   userRole: string | null = null;
-  isCollapsed = false;
-
+ // isCollapsed = false;
+   @Input() isCollapsed = false;
+   @Input() isMobileOpen = false;
+@Output() toggleMobile = new EventEmitter<boolean>();
   constructor(private authService: AuthService, public router: Router) {}
 
   ngOnInit(): void {
@@ -52,7 +54,9 @@ export class SidebarComponent implements OnInit {
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
+    this.isMobileOpen =!this.isMobileOpen
   }
+  
 
   logout(): void {
     this.authService.logout();
