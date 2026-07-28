@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FleetApp</string>
+    <string name="title_activity_main">FleetApp</string>
+    <string name="package_name">com.fleetx.fleetapp</string>
+    <string name="custom_url_scheme">com.fleetx.fleetapp</string>
+</resources>

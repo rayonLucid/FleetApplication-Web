@@ -91,47 +91,7 @@ constructor() {
 //this.geoFenceMarkerLayerGroup = L.layerGroup().addTo(this.map);
     // This effect runs automatically whenever the tracker.lastKnownLocation() changes
     effect(() => {
-      this.signalRService.onGpsUpdateReceived((data:GpsUpdate) => {
-
-    this.driverData =data
-    this.cdRef.markForCheck()
-
-if (this.geofenceCircle) this.map.removeLayer(this.geofenceCircle);
-  if (this.destinationCircle) this.map.removeLayer(this.destinationCircle);
-  if (this.carMarker) { this.map.removeLayer(this.carMarker); this.carMarker = null; }
-  if (this.routeLine) { this.map.removeLayer(this.routeLine); this.routeLine = null; }
-
-      // Check if the moving vehicle matches the trip the dispatcher is currently watching
-      if (this.selectedTrip && this.selectedTrip.vehicleId === data.vehicleId) {
-        const currentPos = L.latLng(data.latitude, data.longitude);
-
-        // 1. Update Map UI (Marker and Path)
-        if (!this.carMarker) {
-          this.carMarker = L.marker(currentPos, { icon: this.icon }).addTo(this.map);
-          this.routeLine = L.polyline([currentPos], { color: '#3498db' }).addTo(this.map);
-        }
- this.geofenceCircle = L.circle(currentPos, {
-    radius:  500,
-    color: '#31dc79',
-    fillColor: '#2ecc71',
-    fillOpacity: 0.2
-  }).addTo(this.map);
-
-        // 2. Center map on the real vehicle movement
-        this.map.panTo(currentPos);
-
-        // // 3. Process Geofencing math locally using the live driver coordinates
-        // if (this.geofenceCircle && this.destinationCircle) {
-        //   this.tracker.processMovement(currentPos, this.geofenceCircle, this.destinationCircle);
-        // }
-
-        // // 4. Handle arrival logic
-        // if (this.tracker.tripStatus() === 'Arrived') {
-        //   alert(`${this.selectedTrip.driverName} has arrived at the destination!`);
-        //   // Handle any cleanup needed
-        // }
-      }
-    });
+    this.ListenforLocationChange()
     });
   }
   ngOnInit(): void {
@@ -333,68 +293,6 @@ setOrigin(latlng: L.LatLng) {
 totalDistance: number = 0;
 isTracking: boolean = false;
 
-startTrip() {
-  this.isTracking = true;
-  this.totalDistance = 0;
-
-  // Create a marker at the map center to start
-  const center = this.map.getCenter();
-  this.carMarker = L.marker(center).addTo(this.map);
-
-  alert("Trip Started!");
-}
-
-endTrip() {
-  this.isTracking = false;
- // alert(`Trip Ended. Total distance: ${this.totalDistance.toFixed(2)} km`);
-
-  this.tracker.endTrip();
-
-  // Fit the map to the entire path taken so the user can see the whole trip
-  if (this.routeLine!.getLatLngs().length > 0) {
-    this.map.fitBounds(this.routeLine!.getBounds(), { padding: [20, 20] });
-  }
-
-  alert(`Trip Summary:
-  Total Distance: ${this.tracker.totalDistance.toFixed(2)} km
-  Status: Completed`);
-}
-
-beginTrip() {
-    this.tracker.startTrip(this.carMarker!.getLatLng());
-  }
-autoSimulate() {
-  setInterval(() => {
-    if (this.tracker.isTracking) {
-      this.simulateMove();
-    }
-  }, 3000); // Moves every 3 seconds
-}
-  simulateMove() {
-    if (!this.tracker.isTracking) return;
-
-    const current = this.carMarker!.getLatLng();
-    // Simulate moving North-East slightly
-    const next = L.latLng(current.lat + 0.002, current.lng + 0.002);
-
-    this.carMarker!.setLatLng(next);
-    this.routeLine!.addLatLng(next);
-    this.tracker.updateLocation(next);
-    this.map.panTo(next);
-
-
-    // Check Geofence
-    const isInside = this.tracker.checkGeofence(next, this.fenceCenter, this.fenceRadius);
-
-    // Change fence color if car exits
-    if (!isInside) {
-      this.geofenceCircle.setStyle({ color: 'red', fillColor: '#e74c3c' });
-    } else {
-      this.geofenceCircle.setStyle({ color: 'green', fillColor: '#2ecc71' });
-    }
-
-    this.map.panTo(next);
-  }
 
 
   startSimulation() {

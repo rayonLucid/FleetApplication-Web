@@ -2,7 +2,7 @@
  "apiUrl": "https://localhost:7168/api/",
   "payStackPublicKey": "pk_test_1234567890abcdefg",
   "rootUrl": "https://localhost:7168/",
-  "appName": "",
+  "productionUrl": "https://api.precleminternationalschool.com.ng/api/",
   "appVersion": "",
   "tokenKey": "",
   "userKey": "",

@@ -10,6 +10,8 @@ import { TripService } from '../../../Services/trip.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
+import { Capacitor, registerPlugin } from '@capacitor/core';
+import { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
 @Component({
   selector: 'app-driver-dashboard',
   standalone: true,
@@ -29,6 +31,12 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   TripStatus :string="Loading"
   private locationIntervalId: any;
   private gpsSubscription: Subscription | null = null;
+ BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>('BackgroundGeolocation');
+
+private isNative = Capacitor.isNativePlatform();
+private nativeWatcherId: string | null = null;
+private webWatchId: number | null = null;
+
 cdr =inject(ChangeDetectorRef)
   locationWatchId: any;
   constructor(
@@ -151,59 +159,96 @@ get isMaintenanceDue(): boolean {
   // Returns true if the maintenance date is today or in the past
   return maintenanceDate <= today;
 }
-  private async startLiveTracking(): Promise<void> {
-  //  console.log(this.currentTrip,"current trip")
-
-
-      try{
-      await this.signalRService.start();
-      // Subscribe to live GPS updates
-      this.gpsSubscription = this.signalRService.vehicleUpdateSubject$.subscribe(update => {
-       if(update){
+ private async startLiveTracking(): Promise<void> {
+  // 1. START SIGNALR LISTENER
+  try {
+    await this.signalRService.start();
+    this.gpsSubscription = this.signalRService.vehicleUpdateSubject$.subscribe(update => {
+      if (update) {
         this.liveLocation = update;
-        this.cdr.detectChanges()
-        this.UpdateCurrentTripStatus(this.currentTrip!.id)
-       }
-        // Optionally play sound or show notification
-      //  console.log('Live location:', update);
-      });
-    }catch(error){
-       this.toast.error('Could not connect to real‑time updates. Please refresh or try again later.');
-        console.error('SignalR start failed:', error);
-        // Optionally set a flag to hide real‑time features.
-     this.isShiftActive = false;
-     this.cdr.markForCheck()
-         return
-    }
-try{
-//console.log(this.currentTrip)
-// 2. START SENDING THE DRIVER'S LOCATION TO THE SERVER
-    if (navigator.geolocation) {
-      // Watch the driver's movement
- const companyId = this.authService.getCompanyId() // Or wherever you get companyId
-      this.locationWatchId = navigator.geolocation.watchPosition(
-        async (position) => {
-          const geoData :OfflineGpsPing = {
-            vehicleId :this.currentTrip?.vehicleId!,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            speed: position.coords.speed ?? 0,
-            timestamp: new Date().toISOString(),
-            companyId:companyId!
-          };
+        this.cdr.detectChanges();
+        this.UpdateCurrentTripStatus(this.currentTrip!.id);
+      }
+    });
+  } catch (error) {
+    this.toast.error('Could not connect to real‑time updates. Please refresh or try again later.');
+    console.error('SignalR start failed:', error);
+    this.isShiftActive = false;
+    this.cdr.markForCheck();
+    return;
+  }
 
-//console.log(geoData,"data")
-          // Call your method here to broadcast to the backend group
+  // 2. START GPS TRACKING (WITH NATIVE / WEB HYBRID CHECK)
+  try {
+    const companyId = this.authService.getCompanyId();
 
-        this. startVehicleLocationPolling(geoData)
+    if (this.isNative) {
+      // 🟢 NATIVE MOBILE TRACKING (Android / iOS)
+      if (this.nativeWatcherId) {
+        await this.BackgroundGeolocation.removeWatcher({ id: this.nativeWatcherId });
+        this.nativeWatcherId = null;
+      }
 
+      this.nativeWatcherId = await this.BackgroundGeolocation.addWatcher(
+        {
+          backgroundTitle: "Trip Tracking Active",
+          backgroundMessage: "Your location is being updated in real-time.",
+          requestPermissions: true,
+          stale: false,
+          distanceFilter: 10
         },
-        (err) => {
-          console.error('Error getting location', err)
-  this.toast.error('Error getting location',err.message);
-        },
-        { enableHighAccuracy: true }
+        (location, error) => {
+          if (error) {
+            console.error('Background Geolocation Error:', error);
+            this.toast.error('Location error in background.', 'GPS Error');
+            return;
+          }
+
+          if (location) {
+            const geoData: OfflineGpsPing = {
+              vehicleId: this.currentTrip?.vehicleId!,
+              latitude: location.latitude,
+              longitude: location.longitude,
+              speed: location.speed != null ? location.speed : 0.0,
+              timestamp: new Date().toISOString(),
+              companyId: companyId!
+            };
+console.log(geoData.companyId,"companyid to be sent")
+console.log(geoData.speed,"speed to be sent")
+console.log(geoData.vehicleId,"vehicleId to be sent")
+console.log(geoData.longitude,"longitude to be sent")
+console.log(geoData.latitude,"latitude to be sent")
+console.log(geoData.timestamp,"timestamp to be sent")
+            this.startVehicleLocationPolling(geoData);
+          }
+        }
       );
+    } else {
+      // 🌐 WEB BROWSER FALLBACK (for Local Dev / Browser Testing)
+      if (navigator.geolocation) {
+        if (this.webWatchId !== null) {
+          navigator.geolocation.clearWatch(this.webWatchId);
+        }
+
+        this.webWatchId = navigator.geolocation.watchPosition(
+          (position) => {
+            const geoData: OfflineGpsPing = {
+              vehicleId: this.currentTrip?.vehicleId!,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              speed: position.coords.speed != null ? position.coords.speed : 0.0,
+              timestamp: new Date().toISOString(),
+              companyId: companyId!
+            };
+
+            this.startVehicleLocationPolling(geoData);
+          },
+          (error) => {
+            console.error(`Web GPS Error (${error.code}): ${error.message}`);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 3000 }
+        );
+      }
     }
 
 
@@ -228,14 +273,14 @@ startVehicleLocationPolling(vehicleData: any) {
  this.toast.error(error,"Data was not Sent to the Server");
  this.isShiftActive =false
  this.cdr.markForCheck()
-}) 
+})
 
   this.locationIntervalId = setInterval(() => {
     this.signalRService.sendVehicleLocation(vehicleData).catch(error =>{
  this.toast.error(error,"Data was not Sent to the Server");
  this.isShiftActive =false
  this.cdr.markForCheck()
-}) 
+})
   }, 5 * 60 * 1000);
 }
   private async stopLiveTracking(): Promise<void> {
@@ -259,6 +304,15 @@ startVehicleLocationPolling(vehicleData: any) {
        this.isShiftActive =true
        this.cdr.detectChanges()
       return;
+    }else{
+      // Stop location tracking
+if (this.isNative && this.nativeWatcherId) {
+    await this.BackgroundGeolocation.removeWatcher({ id: this.nativeWatcherId });
+    this.nativeWatcherId = null;
+  } else if (this.webWatchId !== null) {
+    navigator.geolocation.clearWatch(this.webWatchId);
+    this.webWatchId = null;
+  }
     }
   }
 
@@ -294,6 +348,7 @@ if(tripstatus =="Delayed"){
 )
 }
 UpdateCurrentTripStatus(tripId:string){
+  console.log(tripId,"trip ID")
 this.tripService.UpdateTripStatus(tripId,"In Transit").subscribe(
   result =>{
     if(result.message){
